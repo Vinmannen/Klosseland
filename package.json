@@ -1,0 +1,26 @@
+{
+  "name": "klosseland",
+  "version": "1.0.0",
+  "description": "Klosseland – a creative block-building world for kids",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "server": "node server/index.js",
+    "start": "concurrently \"npm run server\" \"npm run dev\"",
+    "serve": "npm run build && npm run server"
+  },
+  "dependencies": {
+    "three": "^0.167.0",
+    "howler": "^2.2.4",
+    "simplex-noise": "^4.0.3",
+    "localforage": "^1.10.0",
+    "ws": "^8.18.0",
+    "express": "^4.19.2",
+    "concurrently": "^9.0.1"
+  },
+  "devDependencies": {
+    "vite": "^5.4.0"
+  }
+}
