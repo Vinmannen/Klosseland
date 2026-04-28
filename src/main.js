@@ -14,6 +14,8 @@ import { Camera }           from './player/Camera.js'
 import { setLanguage }      from './i18n/index.js'
 import { Inventory }        from './player/Inventory.js'
 import { Hotbar }           from './ui/Hotbar.js'
+import { ToolBar }          from './ui/ToolBar.js'
+import { ProduceBar }       from './ui/ProduceBar.js'
 import { castRay }          from './player/BlockRaycaster.js'
 import { REACH_DISTANCE, LANGUAGES, BIOME } from './data/constants.js'
 import { TitleScreen }      from './ui/TitleScreen.js'
@@ -473,6 +475,8 @@ async function runGame(worldConfig, netOpts = {}) {
   hud.mount()
   const inventory        = new Inventory()
   const hotbar           = new Hotbar(inventory)
+  const toolBar          = new ToolBar(inventory)
+  const produceBar       = new ProduceBar(inventory)
   const inventoryScreen  = new InventoryScreen(inventory)
 
   // ── 9. Chat (multiplayer only) ───────────────────────────
@@ -516,7 +520,7 @@ async function runGame(worldConfig, netOpts = {}) {
   let   resolveQuit
 
   function openSettings() {
-    const settings = new Settings(gameSettings)
+    const settings = new Settings(gameSettings, mode !== 'solo')
     settings.show().then(() => {
       DAY_DURATION_S = gameSettings.dayDurationMin * 60
       soundSystem.setVolume(gameSettings.volume ?? 0.8)
@@ -1259,12 +1263,12 @@ async function runGame(worldConfig, netOpts = {}) {
         }
       }
 
-      // ── R: eat selected food item ────────────────────────────
+      // ── R: eat selected food item (from produce bar) ────────
       if (!chatOpen && controls.consumeKey('KeyR')) {
-        const eatId  = inventory.selectedBlockId()
+        const eatId  = inventory.selectedProduceId()
         const eatDef = BLOCK_BY_ID.get(eatId)
         if (eatDef?.isFood) {
-          inventory.setSlot(inventory.selectedSlot, 0)
+          inventory.setProduceSlot(inventory.selectedProduceSlot, null)
           const name = lang === 'no' ? eatDef.nameNo : eatDef.nameEn
           showToast(lang === 'no' ? `Spiste ${name}!` : `Ate ${name}!`, 2200)
         }
@@ -1327,6 +1331,8 @@ async function runGame(worldConfig, netOpts = {}) {
       lightingSystem.update(player.x, player.y, player.z)
       world.updateChunks(player.chunkX, player.chunkZ, mesher, renderer.scene, 2, 2, lightingSystem)
       hotbar.tick(ts / 1000)
+      toolBar.tick(ts / 1000)
+      produceBar.tick(ts / 1000)
 
       // Network update (remote player interpolation + position sync)
       network?.update(dt)
@@ -1357,10 +1363,6 @@ async function runGame(worldConfig, netOpts = {}) {
 // ── HUD helpers ───────────────────────────────────────────────
 function _buildHUD(multiplayer = false) {
   const ui = document.getElementById('ui-root')
-
-  const hint = multiplayer
-    ? 'WASD move &nbsp;|&nbsp; Double-Space fly &nbsp;|&nbsp; LMB place &nbsp;|&nbsp; RMB remove &nbsp;|&nbsp; MMB pick &nbsp;|&nbsp; E interact &nbsp;|&nbsp; R eat &nbsp;|&nbsp; B recipes &nbsp;|&nbsp; F+LMB fill &nbsp;|&nbsp; [/] select &nbsp;|&nbsp; C copy &nbsp;|&nbsp; V paste &nbsp;|&nbsp; T chat &nbsp;|&nbsp; Tab inv &nbsp;|&nbsp; Esc pause'
-    : 'WASD move &nbsp;|&nbsp; Double-Space fly &nbsp;|&nbsp; LMB place &nbsp;|&nbsp; RMB remove &nbsp;|&nbsp; MMB pick &nbsp;|&nbsp; E interact &nbsp;|&nbsp; R eat &nbsp;|&nbsp; B recipes &nbsp;|&nbsp; F+LMB fill &nbsp;|&nbsp; [/] select &nbsp;|&nbsp; C copy &nbsp;|&nbsp; V paste &nbsp;|&nbsp; Tab inv &nbsp;|&nbsp; Esc pause'
 
   ui.innerHTML += `
     <style>
@@ -1394,14 +1396,6 @@ function _buildHUD(multiplayer = false) {
         color: rgba(255,255,255,0.5);
         pointer-events: none;
       }
-      #hud-hint {
-        position: fixed; bottom: 110px; left: 50%;
-        transform: translateX(-50%);
-        font-size: 0.78rem; color: rgba(255,255,255,0.55);
-        text-shadow: 0 1px 3px rgba(0,0,0,0.7);
-        pointer-events: none;
-        white-space: nowrap;
-      }
       #hud-net {
         position: fixed; top: 120px; right: 16px;
         font-size: 0.8rem; font-weight: 700;
@@ -1415,7 +1409,6 @@ function _buildHUD(multiplayer = false) {
     <div id="hud-crosshair" style="pointer-events:none"></div>
     <div id="hud-fly"       style="pointer-events:none"></div>
     <div id="hud-fps"       style="pointer-events:none"></div>
-    <div id="hud-hint"      style="pointer-events:none">${hint}</div>
     <div id="hud-net"       style="pointer-events:none"></div>
   `
 

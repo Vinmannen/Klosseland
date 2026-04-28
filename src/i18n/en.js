@@ -235,6 +235,7 @@ export default {
   ctrl_screenshot:   'Screenshot',
   ctrl_pause:        'Pause',
   ctrl_camera:       'Toggle camera',
+  ctrl_chat:         'Chat',
 
   // ── Tutorial steps ───────────────────────────────────────
   tut_1_title: 'Welcome to Klosseland!',

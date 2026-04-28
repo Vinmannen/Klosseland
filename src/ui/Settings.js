@@ -27,15 +27,36 @@ export function saveSettings(s) {
 // Day-label map (indices match DAY_DURATIONS_MIN)
 const DAY_LABEL_KEYS = ['settings_day_5', 'settings_day_10', 'settings_day_20', 'settings_day_always']
 
+const CONTROLS = [
+  { key: 'WASD',          label: 'ctrl_move'      },
+  { key: 'Mouse',         label: 'ctrl_look'       },
+  { key: 'Space',         label: 'ctrl_jump'       },
+  { key: 'Space×2',       label: 'ctrl_fly'        },
+  { key: 'LMB',           label: 'ctrl_place'      },
+  { key: 'RMB',           label: 'ctrl_remove'     },
+  { key: 'MMB',           label: 'ctrl_hotbar'     },
+  { key: 'Tab',           label: 'ctrl_inventory'  },
+  { key: 'M',             label: 'ctrl_map'        },
+  { key: 'P',             label: 'ctrl_pets'       },
+  { key: 'Ctrl+Z',        label: 'ctrl_undo'       },
+  { key: 'Ctrl+Y',        label: 'ctrl_redo'       },
+  { key: 'F2',            label: 'ctrl_screenshot' },
+  { key: 'F5',            label: 'ctrl_camera'     },
+  { key: 'Esc',           label: 'ctrl_pause'      },
+]
+const CTRL_MULTIPLAYER = { key: 'T', label: 'ctrl_chat' }
+
 export class Settings {
   /**
-   * @param {object} gameSettings  Live settings object shared with the game loop.
-   *                               May be {} when shown outside a running game.
+   * @param {object}  gameSettings  Live settings object shared with the game loop.
+   *                                May be {} when shown outside a running game.
+   * @param {boolean} multiplayer   Show chat key row when true.
    */
-  constructor(gameSettings) {
-    this._settings = gameSettings
-    this._el       = null
-    this._unsub    = null
+  constructor(gameSettings, multiplayer = false) {
+    this._settings    = gameSettings
+    this._multiplayer = multiplayer
+    this._el          = null
+    this._unsub       = null
   }
 
   /** Returns a Promise that resolves when the user clicks Apply / Close. */
@@ -104,6 +125,16 @@ export class Settings {
             <span>${t('settings_show_fps')}</span>
             <input type="checkbox" id="chk-fps" ${s.showFPS ? 'checked' : ''}>
           </label>
+        </section>
+
+        <section class="settings-section">
+          <h3>${t('settings_controls')}</h3>
+          <div class="ctrl-grid">
+            ${[...CONTROLS, ...(this._multiplayer ? [CTRL_MULTIPLAYER] : [])].map(c => `
+              <kbd class="ctrl-key">${c.key}</kbd>
+              <span class="ctrl-desc">${t(c.label)}</span>
+            `).join('')}
+          </div>
         </section>
 
         <div class="panel-footer">

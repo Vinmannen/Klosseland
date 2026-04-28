@@ -458,6 +458,28 @@ html, body {
   box-shadow: 0 2px 6px rgba(0,0,0,0.4);
 }
 
+.ctrl-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 5px 12px;
+  align-items: center;
+}
+.ctrl-key {
+  display: inline-block;
+  padding: 2px 7px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.78rem;
+  white-space: nowrap;
+  color: #fff;
+}
+.ctrl-desc {
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.75);
+}
+
 /* ╔══════════════════════════════════════════════════════════╗
    ║  INVENTORY SCREEN                                        ║
    ╚══════════════════════════════════════════════════════════╝ */
@@ -517,7 +539,45 @@ html, body {
 .inv-search:focus { border-color: var(--accent); }
 .inv-search::placeholder { color: rgba(255,255,255,0.28); }
 
-/* ── Hotbar preview row ───────────────────────────────────── */
+/* ── Three-bar section (tools / produce / blocks) ─────────── */
+.inv-bars-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--ui-border);
+  position: relative;
+  overflow: visible;
+}
+.inv-bar-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.inv-bar-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  min-width: 52px;
+  text-align: right;
+  flex-shrink: 0;
+  opacity: 0.55;
+}
+.inv-bar-label--tool    { color: #FFA03C; }
+.inv-bar-label--produce { color: #6CC952; }
+.inv-bar-label--blocks  { color: rgba(255,255,255,0.75); }
+.inv-bar-row {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  position: relative;
+  overflow: visible;
+}
+/* Keep legacy ID so any code that queries #inv-hotbar-row still works */
+#inv-hotbar-row { flex-wrap: nowrap; }
+
+/* ── Hotbar preview row (legacy, kept for compatibility) ──── */
 .inv-hotbar-row {
   display: flex;
   gap: 5px;
@@ -550,6 +610,26 @@ html, body {
   border-color: #FFD04A;
   background: rgba(255,208,74,0.15);
   animation: inv-pulse 1.6s ease-in-out infinite;
+}
+/* Tool-slot selected (orange) */
+@keyframes inv-pulse-tool {
+  0%, 100% { box-shadow: 0 0 0 0   rgba(255,160,60,0.55); }
+  50%       { box-shadow: 0 0 0 5px rgba(255,160,60,0);    }
+}
+.inv-hb-slot.inv-hb-selected--tool {
+  border-color: #FFA03C;
+  background: rgba(255,160,60,0.15);
+  animation: inv-pulse-tool 1.6s ease-in-out infinite;
+}
+/* Produce-slot selected (green) */
+@keyframes inv-pulse-produce {
+  0%, 100% { box-shadow: 0 0 0 0   rgba(108,201,82,0.55); }
+  50%       { box-shadow: 0 0 0 5px rgba(108,201,82,0);    }
+}
+.inv-hb-slot.inv-hb-selected--produce {
+  border-color: #6CC952;
+  background: rgba(108,201,82,0.15);
+  animation: inv-pulse-produce 1.6s ease-in-out infinite;
 }
 @keyframes inv-flash {
   0%   { border-color: #fff; background: rgba(255,255,255,0.35); }

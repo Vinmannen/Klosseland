@@ -56,6 +56,8 @@ export const CAM_MAX_POLAR   = 1.5
 
 // Inventory
 export const HOTBAR_SLOTS    = 9
+export const TOOL_SLOTS      = 6   // 2-column × 3-row tool panel (left HUD)
+export const PRODUCE_SLOTS   = 6   // produce quick-access row (above hotbar)
 export const UNDO_STACK_SIZE = 100
 
 // Pets

@@ -16,6 +16,11 @@ const PADDING       = 6
 const CORNER_R      = 6
 const BOTTOM_MARGIN = 20   // px from bottom of viewport
 
+// The produce bar sits above the hotbar; push the label above both.
+const PRODUCE_BAR_H = SLOT_SIZE + PADDING * 2   // same height as hotbar (64 px)
+const BAR_GAP       = 6
+const LABEL_BOTTOM  = BOTTOM_MARGIN + (SLOT_SIZE + PADDING * 2) + BAR_GAP + PRODUCE_BAR_H + BAR_GAP
+
 /** Returns the style name to use as the block thumbnail (top or all face). */
 function getTopStyle(blockDef) {
   if (!blockDef?.tex) return null
@@ -44,12 +49,12 @@ export class Hotbar {
       zIndex:         '10',
     })
 
-    // ── Block-name label above selected slot ──────────────
+    // ── Block-name label above produce bar ──────────────
     this._label = document.createElement('div')
     this._label.id = 'hud-hotbar-label'
     Object.assign(this._label.style, {
       position:   'fixed',
-      bottom:     `${BOTTOM_MARGIN + H + 6}px`,
+      bottom:     `${LABEL_BOTTOM}px`,
       left:       '50%',
       transform:  'translateX(-50%)',
       fontSize:   '0.8rem',

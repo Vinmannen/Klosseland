@@ -1876,6 +1876,17 @@ for (const type of COLOR_TYPES) {
 }
 
 // ─────────────────────────────────────────────────────────────
+//  Stamp category-derived bar-type flags (runs once at load)
+//  isTool:    item belongs exclusively in the tool bar
+//  isProduce: item belongs exclusively in the produce bar
+//  Future activity items can set these flags explicitly on their own definitions.
+// ─────────────────────────────────────────────────────────────
+for (const b of BLOCKS) {
+  if (b.isUtensil) b.isTool = true
+  if (b.category === 'food' && !b.isTool) b.isProduce = true
+}
+
+// ─────────────────────────────────────────────────────────────
 //  Build fast lookup maps
 // ─────────────────────────────────────────────────────────────
 export const BLOCK_BY_ID  = new Map(BLOCKS.map(b => [b.id,  b]))

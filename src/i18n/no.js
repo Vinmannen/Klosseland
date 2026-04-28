@@ -235,6 +235,7 @@ export default {
   ctrl_screenshot:   'Skjermbilde',
   ctrl_pause:        'Pause',
   ctrl_camera:       'Bytt kamera',
+  ctrl_chat:         'Chat',
 
   // ── Opplæringssteg ───────────────────────────────────────
   tut_1_title: 'Velkommen til Klosseland!',

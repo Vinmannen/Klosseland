@@ -1,7 +1,10 @@
 // ─────────────────────────────────────────────────────────────
 //  Klosseland — InventoryScreen
 //  Tab opens a full grid view of all blocks, grouped by category.
-//  Clicking a block assigns it to the currently selected hotbar slot.
+//  Clicking a block assigns it to the correct bar based on its type:
+//    isTool    → tool bar   (selected tool slot)
+//    isProduce → produce bar (selected produce slot)
+//    else      → hotbar     (selected hotbar slot)
 //  Close with Tab or Esc.
 // ─────────────────────────────────────────────────────────────
 import { BLOCKS } from '../data/blockDefinitions.js'
@@ -167,7 +170,7 @@ export class InventoryScreen {
           <span class="inv-title">${isNo ? 'Blokker' : 'Blocks'}</span>
           <span class="inv-close-hint">${isNo ? 'Tab / Esc for å lukke' : 'Tab / Esc to close'}</span>
         </div>
-        <div class="inv-hotbar-row" id="inv-hotbar-row"></div>
+        <div class="inv-bars-wrap" id="inv-bars-wrap"></div>
         <div class="inv-search-wrap">
           <input class="inv-search" id="inv-search" type="text"
             placeholder="${isNo ? 'Søk etter blokk...' : 'Search blocks...'}"
@@ -186,55 +189,123 @@ export class InventoryScreen {
       this._searchTerm = e.target.value
       this._renderGrid()
     })
-    // Let Tab/Esc propagate so the inventory still closes; block everything else
     searchEl.addEventListener('keydown', e => {
       if (e.key !== 'Tab' && e.key !== 'Escape') e.stopPropagation()
     })
 
-    this._renderHotbar()
+    this._renderBars()
     this._renderTabs()
     this._renderGrid()
   }
 
-  // ── Hotbar preview row ────────────────────────────────────
-  _renderHotbar() {
-    const row = this._el.querySelector('#inv-hotbar-row')
-    row.innerHTML = ''
-    const inv = this._inv
+  // ── Three-bar preview section ─────────────────────────────
+  _renderBars() {
+    const wrap = this._el.querySelector('#inv-bars-wrap')
+    wrap.innerHTML = ''
+    const inv  = this._inv
+    const isNo = lang() === 'no'
 
+    // Helper: build one row section (label + slots)
+    const makeSection = (labelText, accentClass) => {
+      const section = document.createElement('div')
+      section.className = 'inv-bar-section'
+      const lbl = document.createElement('span')
+      lbl.className   = `inv-bar-label ${accentClass}`
+      lbl.textContent = labelText
+      section.appendChild(lbl)
+      const row = document.createElement('div')
+      row.className = 'inv-bar-row'
+      section.appendChild(row)
+      return { section, row }
+    }
+
+    // ── Tool slots ──────────────────────────────────────────
+    const { section: toolSec, row: toolRow } = makeSection(
+      isNo ? 'Verktøy' : 'Tools', 'inv-bar-label--tool'
+    )
+    toolRow.id = 'inv-tool-row'
+    for (let i = 0; i < inv.toolSlots.length; i++) {
+      const slot = this._makeBarSlot(inv.toolSlots[i], i === inv.selectedToolSlot, 'tool', i)
+      slot.id = `inv-tool-slot-${i}`
+      toolRow.appendChild(slot)
+    }
+    wrap.appendChild(toolSec)
+
+    // ── Produce slots ───────────────────────────────────────
+    const { section: prodSec, row: prodRow } = makeSection(
+      isNo ? 'Råvarer' : 'Produce', 'inv-bar-label--produce'
+    )
+    prodRow.id = 'inv-produce-row'
+    for (let i = 0; i < inv.produceSlots.length; i++) {
+      const slot = this._makeBarSlot(inv.produceSlots[i], i === inv.selectedProduceSlot, 'produce', i)
+      slot.id = `inv-produce-slot-${i}`
+      prodRow.appendChild(slot)
+    }
+    wrap.appendChild(prodSec)
+
+    // ── Hotbar slots ────────────────────────────────────────
+    const { section: hbSec, row: hbRow } = makeSection(
+      isNo ? 'Blokker' : 'Blocks', 'inv-bar-label--blocks'
+    )
+    hbRow.id = 'inv-hotbar-row'
     for (let i = 0; i < inv.slots.length; i++) {
       const def      = BLOCKS.find(b => b.id === inv.slots[i])
       const selected = i === inv.selectedSlot
-
-      const wrap = document.createElement('div')
-      wrap.className = `inv-hb-slot${selected ? ' inv-hb-selected' : ''}`
-      wrap.id        = `inv-hb-slot-${i}`
-      wrap.title     = def ? blockName(def) : ''
-
+      const wrap2    = document.createElement('div')
+      wrap2.className = `inv-hb-slot${selected ? ' inv-hb-selected' : ''}`
+      wrap2.id        = `inv-hb-slot-${i}`
+      wrap2.title     = def ? blockName(def) : ''
       if (def) {
         const style = topStyle(def)
         if (style) {
-          const c  = document.createElement('canvas')
-          c.width  = 40
-          c.height = 40
+          const c = document.createElement('canvas')
+          c.width = c.height = 40
           atlas.drawTile(c.getContext('2d'), 0, 0, 40, style)
-          wrap.appendChild(c)
+          wrap2.appendChild(c)
         }
       }
-
       const num = document.createElement('span')
       num.className   = 'inv-hb-num'
       num.textContent = String(i + 1)
-      wrap.appendChild(num)
-
-      wrap.addEventListener('click', () => {
+      wrap2.appendChild(num)
+      wrap2.addEventListener('click', () => {
         inv.selectSlot(i)
-        this._renderHotbar()
+        this._renderBars()
         this._renderGrid()
       })
-
-      row.appendChild(wrap)
+      hbRow.appendChild(wrap2)
     }
+    wrap.appendChild(hbSec)
+  }
+
+  // Build a single slot element for the tool or produce bar rows
+  _makeBarSlot(blockId, selected, barType, index) {
+    const def = blockId ? BLOCKS.find(b => b.id === blockId) : null
+    const wrap = document.createElement('div')
+    const selClass = barType === 'tool' ? 'inv-hb-selected--tool'
+                   : barType === 'produce' ? 'inv-hb-selected--produce'
+                   : 'inv-hb-selected'
+    wrap.className = `inv-hb-slot${selected ? ` inv-hb-selected ${selClass}` : ''}`
+    wrap.title     = def ? blockName(def) : ''
+
+    if (def) {
+      const style = topStyle(def)
+      if (style) {
+        const c = document.createElement('canvas')
+        c.width = c.height = 40
+        atlas.drawTile(c.getContext('2d'), 0, 0, 40, style)
+        wrap.appendChild(c)
+      }
+    }
+
+    wrap.addEventListener('click', () => {
+      if (barType === 'tool')    this._inv.selectToolSlot(index)
+      else                       this._inv.selectProduceSlot(index)
+      this._renderBars()
+      this._renderGrid()
+    })
+
+    return wrap
   }
 
   // ── Category tab row ──────────────────────────────────────
@@ -274,12 +345,11 @@ export class InventoryScreen {
   }
 
   // ── Helpers ───────────────────────────────────────────────
-  _makeBlockSlot(def, hotbarSet) {
-    const style    = topStyle(def)
-    const inHotbar = hotbarSet.has(def.id)
+  _makeBlockSlot(def, inAnyBar) {
+    const style = topStyle(def)
 
     const wrap = document.createElement('div')
-    wrap.className = `inv-block-slot${inHotbar ? ' inv-block-in-hotbar' : ''}`
+    wrap.className = `inv-block-slot${inAnyBar ? ' inv-block-in-hotbar' : ''}`
     wrap.title     = blockName(def)
 
     const thumb = document.createElement('div')
@@ -299,12 +369,27 @@ export class InventoryScreen {
     wrap.appendChild(label)
 
     wrap.addEventListener('click', () => {
-      const slot = this._inv.selectedSlot
-      this._inv.setSlot(slot, def.id)
       this._pushRecent(def.id)
-      this._renderHotbar()
-      this._renderGrid()
-      this._flashHotbarSlot(slot, blockName(def))
+
+      if (def.isTool) {
+        const slot = this._inv.selectedToolSlot
+        this._inv.setToolSlot(slot, def.id)
+        this._renderBars()
+        this._renderGrid()
+        this._flashBarSlot('tool', slot, blockName(def))
+      } else if (def.isProduce) {
+        const slot = this._inv.selectedProduceSlot
+        this._inv.setProduceSlot(slot, def.id)
+        this._renderBars()
+        this._renderGrid()
+        this._flashBarSlot('produce', slot, blockName(def))
+      } else {
+        const slot = this._inv.selectedSlot
+        this._inv.setSlot(slot, def.id)
+        this._renderBars()
+        this._renderGrid()
+        this._flashBarSlot('hotbar', slot, blockName(def))
+      }
     })
 
     return wrap
@@ -330,18 +415,24 @@ export class InventoryScreen {
     grid.innerHTML  = ''
     const isNo      = lang() === 'no'
     const term      = this._searchTerm.trim().toLowerCase()
-    const hotbarSet = new Set(this._inv.slots)
+
+    // Merge all bar contents for the "already placed" indicator
+    const inAnyBar = new Set([
+      ...this._inv.slots,
+      ...this._inv.toolSlots.filter(Boolean),
+      ...this._inv.produceSlots.filter(Boolean),
+    ])
 
     if (term.length > 0) {
       const blocks = BLOCKS.filter(b => b.category && !b.hidden && blockName(b).toLowerCase().includes(term))
-      for (const def of blocks) grid.appendChild(this._makeBlockSlot(def, hotbarSet))
+      for (const def of blocks) grid.appendChild(this._makeBlockSlot(def, inAnyBar.has(def.id)))
       if (blocks.length === 0) grid.appendChild(this._makeEmptyEl(isNo))
       return
     }
 
     if (this._activeCat === '__recent') {
       const blocks = this._recentIds.map(id => BLOCKS.find(b => b.id === id)).filter(Boolean)
-      for (const def of blocks) grid.appendChild(this._makeBlockSlot(def, hotbarSet))
+      for (const def of blocks) grid.appendChild(this._makeBlockSlot(def, inAnyBar.has(def.id)))
       if (blocks.length === 0) grid.appendChild(this._makeEmptyEl(isNo))
       return
     }
@@ -352,11 +443,10 @@ export class InventoryScreen {
         const subBlocks = all.filter(b => b.sub === sub.key)
         if (subBlocks.length === 0) continue
         grid.appendChild(this._makeSectionHeader(isNo ? sub.no : sub.en))
-        for (const def of subBlocks) grid.appendChild(this._makeBlockSlot(def, hotbarSet))
+        for (const def of subBlocks) grid.appendChild(this._makeBlockSlot(def, inAnyBar.has(def.id)))
       }
-      // Unsorted furniture (no sub field) shown last without header
       const unsorted = all.filter(b => !b.sub)
-      for (const def of unsorted) grid.appendChild(this._makeBlockSlot(def, hotbarSet))
+      for (const def of unsorted) grid.appendChild(this._makeBlockSlot(def, inAnyBar.has(def.id)))
       if (grid.children.length === 0) grid.appendChild(this._makeEmptyEl(isNo))
       return
     }
@@ -367,17 +457,16 @@ export class InventoryScreen {
         const subBlocks = all.filter(b => b.sub === sub.key)
         if (subBlocks.length === 0) continue
         grid.appendChild(this._makeSectionHeader(isNo ? sub.no : sub.en))
-        for (const def of subBlocks) grid.appendChild(this._makeBlockSlot(def, hotbarSet))
+        for (const def of subBlocks) grid.appendChild(this._makeBlockSlot(def, inAnyBar.has(def.id)))
       }
-      // Unsorted food (no sub field) shown last — original basic foods
       const unsorted = all.filter(b => !b.sub)
-      for (const def of unsorted) grid.appendChild(this._makeBlockSlot(def, hotbarSet))
+      for (const def of unsorted) grid.appendChild(this._makeBlockSlot(def, inAnyBar.has(def.id)))
       if (grid.children.length === 0) grid.appendChild(this._makeEmptyEl(isNo))
       return
     }
 
     const blocks = BLOCKS_BY_CAT.get(this._activeCat) ?? []
-    for (const def of blocks) grid.appendChild(this._makeBlockSlot(def, hotbarSet))
+    for (const def of blocks) grid.appendChild(this._makeBlockSlot(def, inAnyBar.has(def.id)))
     if (blocks.length === 0) grid.appendChild(this._makeEmptyEl(isNo))
   }
 
@@ -388,18 +477,22 @@ export class InventoryScreen {
   }
 
   // ── Placement feedback ────────────────────────────────────
-  _flashHotbarSlot(slotIndex, name) {
-    const slotEl = this._el.querySelector(`#inv-hb-slot-${slotIndex}`)
+  _flashBarSlot(barType, slotIndex, name) {
+    const rowId  = barType === 'tool'    ? `inv-tool-slot-${slotIndex}`
+                 : barType === 'produce' ? `inv-produce-slot-${slotIndex}`
+                 : `inv-hb-slot-${slotIndex}`
+    const slotEl = this._el.querySelector(`#${rowId}`)
     if (!slotEl) return
 
     slotEl.classList.add('inv-hb-flash')
     setTimeout(() => slotEl.classList.remove('inv-hb-flash'), 400)
 
-    const row = this._el.querySelector('#inv-hotbar-row')
+    // Floating name label — attach to the containing row
+    const row = slotEl.parentElement
+    if (!row) return
     const float = document.createElement('div')
     float.className   = 'inv-float-label'
     float.textContent = name
-
     row.appendChild(float)
 
     const slotRect = slotEl.getBoundingClientRect()
