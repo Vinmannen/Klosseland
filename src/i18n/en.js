@@ -273,7 +273,7 @@ export default {
   biome_candy:       'Candy Kingdom',
   biome_autumn:      'Autumn Woods',
   biome_cherry:      'Cherry Blossom Garden',
-  biome_venthyr:     'Venthyr (Vampire Lands)',
+  biome_blodmark:    'Blodmark (Vampire Lands)',
 
   // ── Weather ──────────────────────────────────────────────
   weather_clear:     'Clear',

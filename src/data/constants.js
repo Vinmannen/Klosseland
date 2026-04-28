@@ -74,7 +74,7 @@ export const BIOME = {
   CANDY:        6,
   AUTUMN:       7,
   CHERRY:       8,
-  VENTHYR:      9,
+  BLODMARK:     9,
 }
 
 // Languages

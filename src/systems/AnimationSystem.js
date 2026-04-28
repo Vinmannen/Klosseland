@@ -48,6 +48,16 @@ const SLEEP_LEG_Z  = 0.10  // legs slight spread
 // Blend speed (1/sec — 0→1 in ~0.17 s)
 const POSE_BLEND = 6
 
+// Held-item arm poses
+const HOLD_BLEND_SPEED = 6
+// Two-handed carry: both arms raised forward and angled inward
+const TWO_HAND_ARM_X = -0.62   // arms forward ~35°
+const TWO_HAND_L_Z   =  0.38   // left arm inward (positive z = rightward)
+const TWO_HAND_R_Z   = -0.38   // right arm inward (negative z = leftward)
+// One-handed carry: right arm slightly forward and down
+const ONE_HAND_ARM_X = -0.45
+const ONE_HAND_ARM_Z = -0.18
+
 function _clamp(v, lo, hi) { return v < lo ? lo : v > hi ? hi : v }
 
 export class AnimationSystem {
@@ -79,6 +89,11 @@ export class AnimationSystem {
     this.isSleeping = false
     this._sitBlend  = 0
     this._sleepBlend = 0
+
+    // Held-item pose (set from main.js each frame via heldItemMesh)
+    this.heldItemType  = null   // 'one' | 'two' | null
+    this._holdBlend    = 0
+    this._prevHeldType = null   // last non-null type, used during blend-out
   }
 
   /**
@@ -260,6 +275,28 @@ export class AnimationSystem {
     // Tilt entire character horizontal when sleeping (rotation.x: 0 = upright, -PI/2 = lying down)
     m.group.rotation.x = -(Math.PI / 2) * this._sleepBlend
 
+    // ── Held-item carry pose ──────────────────────────────────
+    // Blend arms toward a carry pose when the player has something selected.
+    // Skipped while airborne, sitting, or sleeping so those poses dominate.
+    if (this.heldItemType) this._prevHeldType = this.heldItemType
+    this._holdBlend = _clamp(
+      this._holdBlend + (this.heldItemType ? 1 : -1) * HOLD_BLEND_SPEED * dt, 0, 1
+    )
+    if (this._holdBlend > 0 && !isAscending && !isDescending &&
+        this._sitBlend < 0.5 && this._sleepBlend < 0.5) {
+      const b        = this._holdBlend
+      const heldType = this.heldItemType ?? this._prevHeldType
+      if (heldType === 'two') {
+        m.armL.rotation.x += (TWO_HAND_ARM_X - m.armL.rotation.x) * b
+        m.armR.rotation.x += (TWO_HAND_ARM_X - m.armR.rotation.x) * b
+        m.armL.rotation.z += (TWO_HAND_L_Z   - m.armL.rotation.z) * b
+        m.armR.rotation.z += (TWO_HAND_R_Z   - m.armR.rotation.z) * b
+      } else if (heldType === 'one') {
+        m.armR.rotation.x += (ONE_HAND_ARM_X - m.armR.rotation.x) * b
+        m.armR.rotation.z += (ONE_HAND_ARM_Z  - m.armR.rotation.z) * b
+      }
+    }
+
     // ── Action arm overlay (right arm swings forward) ─────────
     if (this._actionTimer > 0 && this._sitBlend < 0.5 && this._sleepBlend < 0.5) {
       const t = this._actionTimer / ACTION_DUR           // 1 → 0
@@ -293,5 +330,7 @@ export class AnimationSystem {
     if (m.cloakGroup) { m.cloakGroup.rotation.x = 0 }
     this._hairAngle = this._hairVel = this._cloakAngle = this._cloakVel = 0
     this._sitBlend = this._sleepBlend = this._walkBlend = 0
+    this._holdBlend = 0
+    this._prevHeldType = null
   }
 }

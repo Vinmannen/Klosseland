@@ -247,7 +247,7 @@ export const PALETTE = {
   stoneLantern:   '#484848',
   stoneLanternGlow: '#FFD870',
 
-  // B10 — Venthyr (vampire)
+  // B10 — Blodmark (vampire)
   vBloodBase:     '#6B0000',
   vBloodLight:    '#9B2020',
   vCrimsonMoss:   '#4A0808',
@@ -1293,7 +1293,7 @@ export const BLOCKS = [
     shape: 'panel', isPart: true, partnerDelta: [0, -1, 0] },
 
   // ══════════════════════════════════════════════════════════
-  //  B10 — VENTHYR (Vampire Biome)
+  //  B10 — BLODMARK (Vampire Biome)
   // ══════════════════════════════════════════════════════════
 
   { id: 238, key: 'blood_water',

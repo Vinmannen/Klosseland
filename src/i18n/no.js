@@ -273,7 +273,7 @@ export default {
   biome_candy:       'Godterikongedømmet',
   biome_autumn:      'Høstskogen',
   biome_cherry:      'Kirsebærblomsterhagen',
-  biome_venthyr:     'Venthyr (Vampyrlandene)',
+  biome_blodmark:    'Blodmark (Vampyrlandene)',
 
   // ── Vær ──────────────────────────────────────────────────
   weather_clear:     'Klarvær',

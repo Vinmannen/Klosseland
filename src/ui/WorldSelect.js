@@ -19,7 +19,7 @@ const BIOME_OPTIONS = [
   { value: 'CANDY',       i18nKey: 'biome_candy'    },
   { value: 'AUTUMN',      i18nKey: 'biome_autumn'   },
   { value: 'CHERRY',      i18nKey: 'biome_cherry'   },
-  { value: 'VENTHYR',    i18nKey: 'biome_venthyr'  },
+  { value: 'BLODMARK',   i18nKey: 'biome_blodmark' },
 ]
 
 const STORAGE_KEY = 'kl_worlds'
@@ -250,6 +250,7 @@ export class WorldSelect {
   hide() {
     this._unsub?.()
     if (!this._el) return
+    this._el.style.pointerEvents = 'none'
     this._el.classList.add('kl-fade-out')
     setTimeout(() => { this._el?.remove(); this._el = null }, 500)
   }

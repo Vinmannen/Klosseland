@@ -1658,7 +1658,7 @@ DRAW.petalCarpet = ctx => {
   for (const [x, y, w, h, c] of petals) rect(ctx, x, y, w, h, c)
 }
 
-// ── B10: VENTHYR ──────────────────────────────────────────────
+// ── B10: BLODMARK ──────────────────────────────────────────────
 
 DRAW.bloodWater = ctx => {
   fill(ctx, P.vBloodBase)

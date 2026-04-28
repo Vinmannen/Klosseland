@@ -130,6 +130,11 @@ export const COOK_RECIPES = [
   },
 ]
 
+// ── Valid input sets (used by CookingUI for slot validation) ──
+export const CHOP_INPUTS = new Set(Object.keys(CHOP_RECIPES).map(Number))
+export const MIX_INPUTS  = new Set(MIX_RECIPES.flatMap(r => r.inputs))
+export const COOK_INPUTS = new Set(COOK_RECIPES.flatMap(r => r.ingredients))
+
 // ── Recipe Book data (all recipes summarised for the UI) ─────
 export const RECIPE_BOOK = [
   {

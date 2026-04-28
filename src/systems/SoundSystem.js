@@ -63,7 +63,7 @@ const BIOME_AMBIENT = {
     windGain: 0.11, windFreq: 950, windQ: 2.8,
     accentInterval: [5, 11], droneFreq: null, droneGain: 0,
   },
-  [BIOME.VENTHYR]: {
+  [BIOME.BLODMARK]: {
     windGain: 0.40, windFreq: 110, windQ: 0.6,
     accentInterval: [8, 22], droneFreq: 55, droneGain: 0.10,
   },
@@ -524,7 +524,7 @@ export class SoundSystem {
       case BIOME.CHERRY:
         this._candyChime(now, v * 0.45)
         break
-      case BIOME.VENTHYR:
+      case BIOME.BLODMARK:
         this._batScreech(now, v * 0.85)
         if (Math.random() < 0.35) {
           const delay = 600 + Math.random() * 800

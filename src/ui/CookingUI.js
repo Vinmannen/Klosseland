@@ -7,6 +7,7 @@ import { BLOCK_BY_ID } from '../data/blockDefinitions.js'
 import {
   CHOP_RECIPES, MIX_RECIPES, COOK_RECIPES, RECIPE_BOOK,
   ID_KNIFE, ID_WHISK, ID_PAN, ID_POT,
+  CHOP_INPUTS, MIX_INPUTS, COOK_INPUTS,
 } from '../data/cookingRecipes.js'
 
 // ── Shared style constants ────────────────────────────────────
@@ -25,7 +26,7 @@ const PANEL_STYLE = {
 const OVERLAY_STYLE = {
   position: 'fixed', inset: '0',
   display: 'flex', alignItems: 'center', justifyContent: 'center',
-  background: 'rgba(0,0,0,0.58)', zIndex: '50',
+  background: 'rgba(0,0,0,0.58)', zIndex: '500',
 }
 
 function applyStyle(el, styles) { Object.assign(el.style, styles) }
@@ -123,6 +124,60 @@ function makeArrow() {
   return el
 }
 
+// Mini hotbar shown inside cooking UIs so the player can select items without closing the UI.
+function makeHotbarRow(inventory, atlas, lang) {
+  const HSLOT = 34, HGAP = 3
+  const wrap = document.createElement('div')
+  applyStyle(wrap, {
+    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px',
+    marginTop: '6px', padding: '7px 10px',
+    background: 'rgba(0,0,0,0.28)', borderRadius: '10px',
+    width: '100%', boxSizing: 'border-box',
+  })
+
+  const lbl = document.createElement('div')
+  lbl.textContent = lang === 'no' ? 'Klikk vare i hurtigvalget:' : 'Click item in hotbar to select:'
+  applyStyle(lbl, { color: 'rgba(255,255,255,0.38)', fontSize: '0.62rem' })
+  wrap.appendChild(lbl)
+
+  const row = document.createElement('div')
+  applyStyle(row, { display: 'flex', gap: `${HGAP}px` })
+  wrap.appendChild(row)
+
+  const canvases = []
+
+  function renderHotbar() {
+    canvases.forEach((cvs, i) => {
+      const sel = i === inventory.selectedSlot
+      cvs.style.border = sel ? '2px solid rgba(255,220,50,0.90)' : '2px solid rgba(255,255,255,0.12)'
+      cvs.style.boxShadow = sel ? '0 0 6px rgba(255,220,50,0.40)' : 'none'
+      const ctx = cvs.getContext('2d')
+      ctx.clearRect(0, 0, HSLOT, HSLOT)
+      const blockId = inventory.slots[i] || 0
+      if (blockId) {
+        const d = BLOCK_BY_ID.get(blockId)
+        const style = d?.tex?.all || d?.tex?.top || d?.tex?.side
+        if (style) atlas.drawTile(ctx, 3, 3, HSLOT - 6, style)
+      }
+    })
+  }
+
+  for (let i = 0; i < 9; i++) {
+    const cvs = document.createElement('canvas')
+    cvs.width = cvs.height = HSLOT
+    applyStyle(cvs, {
+      imageRendering: 'pixelated', cursor: 'pointer', borderRadius: '6px',
+      background: 'rgba(0,0,0,0.30)',
+    })
+    canvases.push(cvs)
+    row.appendChild(cvs)
+    cvs.addEventListener('click', () => { inventory.selectSlot(i); renderHotbar() })
+  }
+
+  renderHotbar()
+  return { wrap, renderHotbar }
+}
+
 // Timer progress bar for stove cooking animation.
 function makeTimerBar(accentColor) {
   const outer = document.createElement('div')
@@ -183,6 +238,9 @@ export function openChoppingBoard(inventory, atlas, showToast, controls, lang) {
       : 'Place knife + ingredient, press Chop  -  E / Esc to close',
   ))
 
+  const { wrap: hbWrap, renderHotbar: renderHB } = makeHotbarRow(inventory, atlas, lang)
+  panel.appendChild(hbWrap)
+
   overlay.appendChild(panel)
   document.getElementById('ui-root').appendChild(overlay)
 
@@ -197,46 +255,61 @@ export function openChoppingBoard(inventory, atlas, showToast, controls, lang) {
     }
   }
 
-  function attachSlotHandlers() {
-    // Knife slot: put or take knife
-    knifeSG.cvs.addEventListener('click', () => {
-      const selId = inventory.selectedBlockId()
-      if (!knifeId && selId === ID_KNIFE) {
-        knifeId = ID_KNIFE
-        redrawSlot(knifeSG, knifeId, 'rgba(184,196,204,0.75)')
-      } else if (knifeId) {
-        inventory.setSlot(inventory.selectedSlot, knifeId)
-        knifeId = 0; outputId = 0
-        redrawSlot(knifeSG, 0, 'rgba(184,196,204,0.45)')
-        redrawSlot(outputSG, 0, 'rgba(120,200,100,0.40)')
-      }
-    })
-    // Input slot
-    inputSG.cvs.addEventListener('click', () => {
-      const selId = inventory.selectedBlockId()
-      if (!inputId && selId && selId !== ID_KNIFE) {
-        inputId = selId
-        outputId = 0
-        redrawSlot(inputSG, inputId, 'rgba(212,165,116,0.75)')
-        redrawSlot(outputSG, 0, 'rgba(120,200,100,0.40)')
-      } else if (inputId) {
-        inventory.setSlot(inventory.selectedSlot, inputId)
-        inputId = 0; outputId = 0
-        redrawSlot(inputSG, 0, 'rgba(212,165,116,0.40)')
-        redrawSlot(outputSG, 0, 'rgba(120,200,100,0.40)')
-      }
-    })
-    // Output slot: take result
-    outputSG.cvs.addEventListener('click', () => {
-      if (outputId) {
-        inventory.setSlot(inventory.selectedSlot, outputId)
-        outputId = 0; inputId = 0
-        redrawSlot(outputSG, 0, 'rgba(120,200,100,0.40)')
-        redrawSlot(inputSG,  0, 'rgba(212,165,116,0.40)')
-      }
-    })
-  }
-  attachSlotHandlers()
+  // Source slots so items return to where they came from
+  let knifeSlot  = -1
+  let inputSlot  = -1
+  let outputDest = -1  // slot freed by consuming the ingredient — safe landing for the result
+
+  // Knife slot: put or take knife
+  knifeSG.cvs.addEventListener('click', () => {
+    const selId = inventory.selectedBlockId()
+    if (!knifeId && selId === ID_KNIFE) {
+      knifeSlot = inventory.selectedSlot
+      knifeId = ID_KNIFE
+      inventory.setSlot(knifeSlot, 0)
+      renderHB()
+      redrawSlot(knifeSG, knifeId, 'rgba(184,196,204,0.75)')
+    } else if (knifeId) {
+      inventory.setSlot(knifeSlot, knifeId)
+      knifeId = 0; knifeSlot = -1; outputId = 0
+      renderHB()
+      redrawSlot(knifeSG, 0, 'rgba(184,196,204,0.45)')
+      redrawSlot(outputSG, 0, 'rgba(120,200,100,0.40)')
+    }
+  })
+
+  // Input slot
+  inputSG.cvs.addEventListener('click', () => {
+    const selId = inventory.selectedBlockId()
+    if (!inputId && selId && CHOP_INPUTS.has(selId)) {
+      inputSlot = inventory.selectedSlot
+      inputId = selId
+      inventory.setSlot(inputSlot, 0)
+      renderHB()
+      outputId = 0
+      redrawSlot(inputSG, inputId, 'rgba(212,165,116,0.75)')
+      redrawSlot(outputSG, 0, 'rgba(120,200,100,0.40)')
+    } else if (!inputId && selId) {
+      showToast(lang === 'no' ? 'Kan ikke hakkes her' : 'Not a valid ingredient', 1800)
+    } else if (inputId) {
+      inventory.setSlot(inputSlot, inputId)
+      inputId = 0; inputSlot = -1; outputId = 0
+      renderHB()
+      redrawSlot(inputSG, 0, 'rgba(212,165,116,0.40)')
+      redrawSlot(outputSG, 0, 'rgba(120,200,100,0.40)')
+    }
+  })
+
+  // Output slot: take result
+  outputSG.cvs.addEventListener('click', () => {
+    if (outputId) {
+      inventory.setSlot(outputDest !== -1 ? outputDest : inventory.selectedSlot, outputId)
+      outputId = 0; outputDest = -1; inputId = 0; inputSlot = -1
+      renderHB()
+      redrawSlot(outputSG, 0, 'rgba(120,200,100,0.40)')
+      redrawSlot(inputSG,  0, 'rgba(212,165,116,0.40)')
+    }
+  })
 
   // Chop button
   chopBtn.addEventListener('click', () => {
@@ -251,19 +324,19 @@ export function openChoppingBoard(inventory, atlas, showToast, controls, lang) {
     if (!result) {
       showToast(lang === 'no' ? 'Kan ikke hakkes' : 'Cannot chop this', 1800); return
     }
-    outputId = result; inputId = 0
+    outputDest = inputSlot
+    outputId = result; inputId = 0; inputSlot = -1
     redrawSlot(inputSG,  0,        'rgba(212,165,116,0.40)')
     redrawSlot(outputSG, outputId, 'rgba(120,200,100,0.75)')
     const name = BLOCK_BY_ID.get(outputId)
     const nameStr = (lang === 'no' ? name?.nameNo : name?.nameEn) ?? ''
     showToast((lang === 'no' ? 'Ferdig: ' : 'Done: ') + nameStr, 2200)
-    attachSlotHandlers()
   })
 
   function close() {
-    if (knifeId)  inventory.setSlot(inventory.selectedSlot, knifeId)
-    if (inputId)  inventory.setSlot(inventory.selectedSlot, inputId)
-    if (outputId) inventory.setSlot(inventory.selectedSlot, outputId)
+    if (knifeId)  inventory.setSlot(knifeSlot, knifeId)
+    if (inputId)  inventory.setSlot(inputSlot, inputId)
+    if (outputId) inventory.setSlot(outputDest !== -1 ? outputDest : inventory.selectedSlot, outputId)
     overlay.remove(); controls.lock()
   }
   overlay.addEventListener('click', e => { if (e.target === overlay) close() })
@@ -315,6 +388,9 @@ export function openMixingBowl(inventory, atlas, showToast, controls, lang) {
       : 'Place whisk + ingredients, press Mix  -  E / Esc to close',
   ))
 
+  const { wrap: hbWrapMix, renderHotbar: renderHB } = makeHotbarRow(inventory, atlas, lang)
+  panel.appendChild(hbWrapMix)
+
   overlay.appendChild(panel)
   document.getElementById('ui-root').appendChild(overlay)
 
@@ -329,46 +405,58 @@ export function openMixingBowl(inventory, atlas, showToast, controls, lang) {
     }
   }
 
-  function attachHandlers() {
-    whiskSG.cvs.addEventListener('click', () => {
+  let whiskSlot  = -1
+  const inputSlots = [-1, -1, -1]
+  let outputDest = -1
+
+  whiskSG.cvs.addEventListener('click', () => {
+    const selId = inventory.selectedBlockId()
+    if (!whiskId && selId === ID_WHISK) {
+      whiskSlot = inventory.selectedSlot
+      whiskId = ID_WHISK
+      inventory.setSlot(whiskSlot, 0)
+      renderHB()
+      redrawSlot(whiskSG, whiskId, 'rgba(192,200,208,0.80)')
+    } else if (whiskId) {
+      inventory.setSlot(whiskSlot, whiskId)
+      whiskId = 0; whiskSlot = -1; outputId = 0
+      renderHB()
+      redrawSlot(whiskSG, 0, 'rgba(192,200,208,0.45)')
+      redrawSlot(outSG,   0, 'rgba(120,200,100,0.40)')
+    }
+  })
+
+  inSGs.forEach((sg, i) => {
+    sg.cvs.addEventListener('click', () => {
       const selId = inventory.selectedBlockId()
-      if (!whiskId && selId === ID_WHISK) {
-        whiskId = ID_WHISK
-        redrawSlot(whiskSG, whiskId, 'rgba(192,200,208,0.80)')
-      } else if (whiskId) {
-        inventory.setSlot(inventory.selectedSlot, whiskId)
-        whiskId = 0; outputId = 0
-        redrawSlot(whiskSG, 0, 'rgba(192,200,208,0.45)')
-        redrawSlot(outSG,   0, 'rgba(120,200,100,0.40)')
-      }
-    })
-
-    inSGs.forEach((sg, i) => {
-      sg.cvs.addEventListener('click', () => {
-        const selId = inventory.selectedBlockId()
-        if (!inputs[i] && selId && selId !== ID_WHISK) {
-          inputs[i] = selId; outputId = 0
-          redrawSlot(sg,    inputs[i], 'rgba(100,160,220,0.75)')
-          redrawSlot(outSG, 0,         'rgba(120,200,100,0.40)')
-        } else if (inputs[i]) {
-          inventory.setSlot(inventory.selectedSlot, inputs[i])
-          inputs[i] = 0; outputId = 0
-          redrawSlot(sg,    0, 'rgba(100,160,220,0.40)')
-          redrawSlot(outSG, 0, 'rgba(120,200,100,0.40)')
-        }
-      })
-    })
-
-    outSG.cvs.addEventListener('click', () => {
-      if (outputId) {
-        inventory.setSlot(inventory.selectedSlot, outputId)
-        outputId = 0; inputs.fill(0)
+      if (!inputs[i] && selId && MIX_INPUTS.has(selId)) {
+        inputSlots[i] = inventory.selectedSlot
+        inputs[i] = selId; outputId = 0
+        inventory.setSlot(inputSlots[i], 0)
+        renderHB()
+        redrawSlot(sg,    inputs[i], 'rgba(100,160,220,0.75)')
+        redrawSlot(outSG, 0,         'rgba(120,200,100,0.40)')
+      } else if (!inputs[i] && selId) {
+        showToast(lang === 'no' ? 'Ikke en gyldig ingrediens' : 'Not a valid ingredient', 1800)
+      } else if (inputs[i]) {
+        inventory.setSlot(inputSlots[i], inputs[i])
+        inputs[i] = 0; inputSlots[i] = -1; outputId = 0
+        renderHB()
+        redrawSlot(sg,    0, 'rgba(100,160,220,0.40)')
         redrawSlot(outSG, 0, 'rgba(120,200,100,0.40)')
-        inSGs.forEach(sg => redrawSlot(sg, 0, 'rgba(100,160,220,0.40)'))
       }
     })
-  }
-  attachHandlers()
+  })
+
+  outSG.cvs.addEventListener('click', () => {
+    if (outputId) {
+      inventory.setSlot(outputDest !== -1 ? outputDest : inventory.selectedSlot, outputId)
+      outputId = 0; outputDest = -1; inputs.fill(0); inputSlots.fill(-1)
+      renderHB()
+      redrawSlot(outSG, 0, 'rgba(120,200,100,0.40)')
+      inSGs.forEach(sg => redrawSlot(sg, 0, 'rgba(100,160,220,0.40)'))
+    }
+  })
 
   // CSS swirl animation injected once
   if (!document.getElementById('mix-style')) {
@@ -404,7 +492,8 @@ export function openMixingBowl(inventory, atlas, showToast, controls, lang) {
     mixBtn.innerHTML = `<span class="kl-mix-spin">~</span>`
     setTimeout(() => {
       mixBtn.textContent = lang === 'no' ? 'Miks!' : 'Mix!'
-      outputId = match.output; inputs.fill(0)
+      outputDest = inputSlots.find(s => s !== -1) ?? -1
+      outputId = match.output; inputs.fill(0); inputSlots.fill(-1)
       inSGs.forEach(sg => redrawSlot(sg, 0, 'rgba(100,160,220,0.40)'))
       redrawSlot(outSG, outputId, 'rgba(120,200,100,0.75)')
       const name = BLOCK_BY_ID.get(outputId)
@@ -414,9 +503,9 @@ export function openMixingBowl(inventory, atlas, showToast, controls, lang) {
   })
 
   function close() {
-    whiskId && inventory.setSlot(inventory.selectedSlot, whiskId)
-    inputs.forEach(id => id && inventory.setSlot(inventory.selectedSlot, id))
-    outputId && inventory.setSlot(inventory.selectedSlot, outputId)
+    if (whiskId) inventory.setSlot(whiskSlot, whiskId)
+    inputs.forEach((id, i) => { if (id) inventory.setSlot(inputSlots[i], id) })
+    if (outputId) inventory.setSlot(outputDest !== -1 ? outputDest : inventory.selectedSlot, outputId)
     overlay.remove(); controls.lock()
   }
   overlay.addEventListener('click', e => { if (e.target === overlay) close() })
@@ -493,6 +582,9 @@ export function openStove(blockName, inventory, atlas, showToast, controls, lang
       : 'Cookware + ingredients, press Cook  -  E / Esc to close',
   ))
 
+  const { wrap: hbWrapStove, renderHotbar: renderHB } = makeHotbarRow(inventory, atlas, lang)
+  panel.appendChild(hbWrapStove)
+
   overlay.appendChild(panel)
   document.getElementById('ui-root').appendChild(overlay)
 
@@ -507,48 +599,59 @@ export function openStove(blockName, inventory, atlas, showToast, controls, lang
     }
   }
 
-  function attachHandlers() {
-    cwSG.cvs.addEventListener('click', () => {
+  let cwSlot    = -1
+  const ingSlots = [-1, -1]
+  let outputDest = -1
+
+  cwSG.cvs.addEventListener('click', () => {
+    const selId = inventory.selectedBlockId()
+    const isValid = selId === ID_PAN || selId === ID_POT
+    if (!cookwareId && isValid) {
+      cwSlot = inventory.selectedSlot
+      cookwareId = selId
+      inventory.setSlot(cwSlot, 0)
+      renderHB()
+      redrawSlot(cwSG, cookwareId, 'rgba(255,128,48,0.80)')
+    } else if (cookwareId) {
+      inventory.setSlot(cwSlot, cookwareId)
+      cookwareId = 0; cwSlot = -1; outputId = 0
+      renderHB()
+      redrawSlot(cwSG,  0, 'rgba(255,128,48,0.40)')
+      redrawSlot(outSG, 0, 'rgba(120,200,100,0.40)')
+    }
+  })
+
+  inSGs.forEach((sg, i) => {
+    sg.cvs.addEventListener('click', () => {
       const selId = inventory.selectedBlockId()
-      const isValid = selId === ID_PAN || selId === ID_POT
-      if (!cookwareId && isValid) {
-        cookwareId = selId
-        redrawSlot(cwSG, cookwareId, 'rgba(255,128,48,0.80)')
-      } else if (cookwareId) {
-        inventory.setSlot(inventory.selectedSlot, cookwareId)
-        cookwareId = 0; outputId = 0
-        redrawSlot(cwSG,  0, 'rgba(255,128,48,0.40)')
+      if (!ingredients[i] && selId && COOK_INPUTS.has(selId)) {
+        ingSlots[i] = inventory.selectedSlot
+        ingredients[i] = selId; outputId = 0
+        inventory.setSlot(ingSlots[i], 0)
+        renderHB()
+        redrawSlot(sg,    ingredients[i], 'rgba(255,176,80,0.75)')
+        redrawSlot(outSG, 0,              'rgba(120,200,100,0.40)')
+      } else if (!ingredients[i] && selId) {
+        showToast(lang === 'no' ? 'Ikke en gyldig ingrediens' : 'Not a valid ingredient', 1800)
+      } else if (ingredients[i]) {
+        inventory.setSlot(ingSlots[i], ingredients[i])
+        ingredients[i] = 0; ingSlots[i] = -1; outputId = 0
+        renderHB()
+        redrawSlot(sg,    0, 'rgba(255,176,80,0.35)')
         redrawSlot(outSG, 0, 'rgba(120,200,100,0.40)')
       }
     })
+  })
 
-    inSGs.forEach((sg, i) => {
-      sg.cvs.addEventListener('click', () => {
-        const selId = inventory.selectedBlockId()
-        const notCookware = selId !== ID_PAN && selId !== ID_POT
-        if (!ingredients[i] && selId && notCookware) {
-          ingredients[i] = selId; outputId = 0
-          redrawSlot(sg,    ingredients[i], 'rgba(255,176,80,0.75)')
-          redrawSlot(outSG, 0,              'rgba(120,200,100,0.40)')
-        } else if (ingredients[i]) {
-          inventory.setSlot(inventory.selectedSlot, ingredients[i])
-          ingredients[i] = 0; outputId = 0
-          redrawSlot(sg,    0, 'rgba(255,176,80,0.35)')
-          redrawSlot(outSG, 0, 'rgba(120,200,100,0.40)')
-        }
-      })
-    })
-
-    outSG.cvs.addEventListener('click', () => {
-      if (outputId && !cooking) {
-        inventory.setSlot(inventory.selectedSlot, outputId)
-        outputId = 0; ingredients.fill(0)
-        redrawSlot(outSG, 0, 'rgba(120,200,100,0.40)')
-        inSGs.forEach(sg => redrawSlot(sg, 0, 'rgba(255,176,80,0.35)'))
-      }
-    })
-  }
-  attachHandlers()
+  outSG.cvs.addEventListener('click', () => {
+    if (outputId && !cooking) {
+      inventory.setSlot(outputDest !== -1 ? outputDest : inventory.selectedSlot, outputId)
+      outputId = 0; outputDest = -1; ingredients.fill(0); ingSlots.fill(-1)
+      renderHB()
+      redrawSlot(outSG, 0, 'rgba(120,200,100,0.40)')
+      inSGs.forEach(sg => redrawSlot(sg, 0, 'rgba(255,176,80,0.35)'))
+    }
+  })
 
   cookBtn.addEventListener('click', () => {
     if (cooking || outputId) return
@@ -582,8 +685,9 @@ export function openStove(blockName, inventory, atlas, showToast, controls, lang
       timerInner.style.width = `${pct * 100}%`
       if (pct < 1) { requestAnimationFrame(animate); return }
 
-      // Done
-      outputId = match.output; ingredients.fill(0)
+      // Done — ingredients consumed, cookware stays in station
+      outputDest = ingSlots.find(s => s !== -1) ?? -1
+      outputId = match.output; ingredients.fill(0); ingSlots.fill(-1)
       inSGs.forEach(sg => redrawSlot(sg, 0, 'rgba(255,176,80,0.35)'))
       redrawSlot(outSG, outputId, 'rgba(120,200,100,0.75)')
       timerOuter.style.display = 'none'
@@ -600,9 +704,9 @@ export function openStove(blockName, inventory, atlas, showToast, controls, lang
 
   function close() {
     if (!cooking) {
-      cookwareId && inventory.setSlot(inventory.selectedSlot, cookwareId)
-      ingredients.forEach(id => id && inventory.setSlot(inventory.selectedSlot, id))
-      outputId && inventory.setSlot(inventory.selectedSlot, outputId)
+      if (cookwareId) inventory.setSlot(cwSlot, cookwareId)
+      ingredients.forEach((id, i) => { if (id) inventory.setSlot(ingSlots[i], id) })
+      if (outputId) inventory.setSlot(outputDest !== -1 ? outputDest : inventory.selectedSlot, outputId)
     }
     overlay.remove(); controls.lock()
   }

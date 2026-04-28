@@ -32,6 +32,7 @@ import { BLOCK_BY_ID, getBlockColor } from './data/blockDefinitions.js'
 import { ChatUI }           from './ui/ChatUI.js'
 import { PlayerMesh }       from './entities/PlayerMesh.js'
 import { AnimationSystem }  from './systems/AnimationSystem.js'
+import { HeldItemMesh }     from './entities/HeldItemMesh.js'
 import { PetSystem }        from './systems/PetSystem.js'
 import { LightingSystem }  from './systems/LightingSystem.js'
 import { FillTool }        from './tools/FillTool.js'
@@ -438,9 +439,10 @@ async function runGame(worldConfig, netOpts = {}) {
   } else {
     player.spawnAt(spawnOriginX, spawnOriginZ, world)
   }
-  const playerMesh   = new PlayerMesh(renderer.scene)
-  const animSystem   = new AnimationSystem(playerMesh)
-  const petSystem    = new PetSystem(renderer.scene)
+  const playerMesh    = new PlayerMesh(renderer.scene)
+  const animSystem    = new AnimationSystem(playerMesh)
+  const heldItemMesh  = new HeldItemMesh(playerMesh, atlas)
+  const petSystem     = new PetSystem(renderer.scene)
 
   setProgress(0.8, 'Meshing terrain…')
   world.updateChunks(
@@ -537,6 +539,7 @@ async function runGame(worldConfig, netOpts = {}) {
     }
     await world.flush()
     world.dispose()
+    heldItemMesh.dispose()
     animSystem.dispose()
     playerMesh.dispose()
     soundSystem.dispose()
@@ -805,7 +808,7 @@ async function runGame(worldConfig, netOpts = {}) {
     Object.assign(overlay.style, {
       position: 'fixed', inset: '0',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      background: 'rgba(0,0,0,0.55)', zIndex: '50',
+      background: 'rgba(0,0,0,0.55)', zIndex: '500',
     })
 
     const panel = document.createElement('div')
@@ -909,7 +912,7 @@ async function runGame(worldConfig, netOpts = {}) {
     Object.assign(overlay.style, {
       position: 'fixed', inset: '0',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      background: 'rgba(0,0,0,0.55)', zIndex: '50',
+      background: 'rgba(0,0,0,0.55)', zIndex: '500',
     })
     const panel = document.createElement('div')
     Object.assign(panel.style, {
@@ -1061,6 +1064,9 @@ async function runGame(worldConfig, netOpts = {}) {
       playerMesh.update(player.x, player.y, player.z, player.vx, player.vz)
       animSystem.isSitting  = sittingAt  !== null
       animSystem.isSleeping = sleepingAt !== null
+      const _selId  = inventory.selectedBlockId()
+      heldItemMesh.setItem(_selId ?? 0, _selId ? BLOCK_BY_ID.get(_selId) : null)
+      animSystem.heldItemType = heldItemMesh.itemType
       animSystem.update(dt, player, controls)
       camera.update(player, controls, world, dt)
       soundSystem.update(dt, player, world)

@@ -662,7 +662,7 @@ export const ANIMAL_DEFS = [
   },
   {
     key: 'vampire_bat',
-    biomes: [BIOME.VENTHYR],
+    biomes: [BIOME.BLODMARK],
     speed: 2.2, fleeSpeed: 4.5, groundOffset: 3, turnRate: 5,
     flapAlways: true,
     buildMesh: buildVampireBat, behavior: behaviorVampireBat,

@@ -45,7 +45,7 @@ const KEYS = [
   'mossy_stone', 'wildflower_patch',
   // B9 — Cherry
   'petal_carpet', 'stone_lantern',
-  // B10 — Venthyr
+  // B10 — Blodmark
   'blood_water', 'blood_water_flow',
   'crimson_moss', 'dark_stone',
   'bloodwood_log', 'bloodwood_leaves',
@@ -154,7 +154,7 @@ export class WorldGen {
     const ALL = [
       BIOME.MEADOW, BIOME.FOREST, BIOME.SNOWY_PEAKS, BIOME.DESERT,
       BIOME.JUNGLE, BIOME.MUSHROOM, BIOME.CANDY, BIOME.AUTUMN, BIOME.CHERRY,
-      BIOME.VENTHYR,
+      BIOME.BLODMARK,
     ]
 
     // How far from origin to spread the 3×3 anchor grid
@@ -316,7 +316,7 @@ export class WorldGen {
         floor     = SEA_LEVEL + 2
         break
       }
-      case BIOME.VENTHYR: {
+      case BIOME.BLODMARK: {
         // Dramatic ridged cliffs with low blood-soaked valleys
         const ridge = 1 - Math.abs(this._nRidge(x * 0.009 + this._ox * 0.6, z * 0.009 + this._oz * 0.6))
         base = base * 0.45 + ridge * 0.55
@@ -474,8 +474,8 @@ export class WorldGen {
       }
     }
 
-    // VENTHYR: blood pools in valleys — placed as source blocks so BloodWaterSystem can flow them
-    if (biome === BIOME.VENTHYR && surface <= SEA_LEVEL + 3) {
+    // BLODMARK: blood pools in valleys — placed as source blocks so BloodWaterSystem can flow them
+    if (biome === BIOME.BLODMARK && surface <= SEA_LEVEL + 3) {
       const poolN = this._nHeight2(wx * 0.08 + this._ox * 0.5, wz * 0.08 + this._oz * 0.5)
       if (poolN > 0.50) {
         chunk.setBlock(lx, surface, lz, B.dark_stone)
@@ -510,7 +510,7 @@ export class WorldGen {
       case BIOME.MUSHROOM:    return depth < 2 ? B.mycelium : depth < 5 ? B.dirt : B.stone
       case BIOME.CANDY:       return depth < 3 ? B.cloud_block : depth < 5 ? B.candy_mint : B.stone
       case BIOME.FOREST:      return depth < 3 ? B.magic_dirt : B.stone
-      case BIOME.VENTHYR:     return depth < 3 ? B.dark_stone : B.stone
+      case BIOME.BLODMARK:     return depth < 3 ? B.dark_stone : B.stone
       default:                return depth < 4 ? B.dirt : B.stone
     }
   }
@@ -526,7 +526,7 @@ export class WorldGen {
       case BIOME.MUSHROOM:    return B.mycelium
       case BIOME.CANDY:       return B.candy_pink
       case BIOME.CHERRY:      return B.grass
-      case BIOME.VENTHYR:     return this._nDetail(wx * 0.09 + 13, wz * 0.09 + 13) > 0.55
+      case BIOME.BLODMARK:     return this._nDetail(wx * 0.09 + 13, wz * 0.09 + 13) > 0.55
                                 ? B.dark_stone : B.crimson_moss
       default:                return B.grass
     }
@@ -706,7 +706,7 @@ export class WorldGen {
         break
       }
 
-      case BIOME.VENTHYR: {
+      case BIOME.BLODMARK: {
         // darkN divides the biome: dense groves vs. open blighted wastes
         const darkN = this._nHeight2(wx * 0.05 + this._ox * 0.8, wz * 0.05 + this._oz * 0.8)
         if (darkN > 0.1) {
@@ -1188,7 +1188,7 @@ export class WorldGen {
     }
   }
 
-  // B10 — Venthyr helpers ──────────────────────────────────────
+  // B10 — Blodmark helpers ──────────────────────────────────────
 
   /**
    * Bloodwood tree — very tall dark trunk (8–13), wide drooping crimson canopy (r 3–4)
