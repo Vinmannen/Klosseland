@@ -55,6 +55,13 @@ const KEYS = [
 ]
 for (const k of KEYS) { const b = BLOCK_BY_KEY.get(k); if (b) B[k] = b.id }
 
+// Non-solid, non-liquid decoration IDs — tree trunks overwrite these during generation
+const SURFACE_DECO = new Set(
+  [...BLOCK_BY_KEY.values()]
+    .filter(b => b.solid === false && !b.liquid && b.id !== 0)
+    .map(b => b.id)
+)
+
 // ─────────────────────────────────────────────────────────────
 export class WorldGen {
   /**
@@ -769,7 +776,7 @@ export class WorldGen {
 
     // Trunk
     for (let dy = 0; dy < trunkH; dy++) {
-      this._safeSet(chunk, lx, by + dy, lz, logId)
+      this._forceSet(chunk, lx, by + dy, lz, logId)
     }
 
     // Crown of leaves
@@ -802,12 +809,12 @@ export class WorldGen {
 
   _placeCactus(chunk, lx, by, lz) {
     const h = 2 + Math.floor(Math.random() * 2)
-    for (let dy = 0; dy < h; dy++) this._safeSet(chunk, lx, by + dy, lz, B.cactus)
+    for (let dy = 0; dy < h; dy++) this._forceSet(chunk, lx, by + dy, lz, B.cactus)
   }
 
   _placeMushroomTree(chunk, lx, by, lz) {
     const h = 4 + Math.floor(Math.random() * 3)
-    for (let dy = 0; dy < h; dy++) this._safeSet(chunk, lx, by + dy, lz, B.mushroom_stem)
+    for (let dy = 0; dy < h; dy++) this._forceSet(chunk, lx, by + dy, lz, B.mushroom_stem)
     // Cap
     for (let dx = -2; dx <= 2; dx++) {
       for (let dz = -2; dz <= 2; dz++) {
@@ -818,7 +825,7 @@ export class WorldGen {
     // Glowing mushroom cluster at the base — bioluminescent undergrowth
     const baseRing = [[-2,0],[2,0],[0,-2],[0,2],[-1,-1],[1,-1],[-1,1],[1,1]]
     for (const [dx, dz] of baseRing) {
-      if (Math.random() < 0.5) this._safeSet(chunk, lx + dx, by, lz + dz, B.glowing_mushroom)
+      if (Math.random() < 0.5) this._forceSet(chunk, lx + dx, by, lz + dz, B.glowing_mushroom)
     }
   }
 
@@ -872,7 +879,7 @@ export class WorldGen {
 
     // Tall birch trunk
     for (let dy = 0; dy < trunkH; dy++) {
-      this._safeSet(chunk, lx, by + dy, lz, B.birch_log)
+      this._forceSet(chunk, lx, by + dy, lz, B.birch_log)
     }
 
     // Spherical crown of birch leaves
@@ -910,7 +917,7 @@ export class WorldGen {
 
     // Trunk
     for (let dy = 0; dy < trunkH; dy++) {
-      this._safeSet(chunk, lx, by + dy, lz, B.willow_log)
+      this._forceSet(chunk, lx, by + dy, lz, B.willow_log)
     }
 
     // Rounded canopy (slightly flattened — squash Y by ~0.7)
@@ -999,18 +1006,18 @@ export class WorldGen {
   _placeSandstonePillar(chunk, lx, sy, lz, n) {
     const height = Math.min(9, 3 + Math.floor((n - 0.92) * 60))
     for (let dy = 0; dy < height - 1; dy++) {
-      this._safeSet(chunk, lx, sy + dy, lz, B.sandstone)
+      this._forceSet(chunk, lx, sy + dy, lz, B.sandstone)
     }
-    this._safeSet(chunk, lx, sy + height - 1, lz, B.cracked_sandstone)
+    this._forceSet(chunk, lx, sy + height - 1, lz, B.cracked_sandstone)
 
     if (Math.random() < 0.2) {
       const dirs = [[2, 0], [-2, 0], [0, 2], [0, -2]]
       const [dx, dz] = dirs[Math.floor(Math.random() * 4)]
       const h2 = Math.max(2, height - 2)
       for (let dy = 0; dy < h2 - 1; dy++) {
-        this._safeSet(chunk, lx + dx, sy + dy, lz + dz, B.sandstone)
+        this._forceSet(chunk, lx + dx, sy + dy, lz + dz, B.sandstone)
       }
-      this._safeSet(chunk, lx + dx, sy + h2 - 1, lz + dz, B.cracked_sandstone)
+      this._forceSet(chunk, lx + dx, sy + h2 - 1, lz + dz, B.cracked_sandstone)
     }
   }
 
@@ -1069,7 +1076,7 @@ export class WorldGen {
   /** Packed-ice pillar 3–7 tall, ice cap on top.  30% chance of companion spike. */
   _placeIceSpike(chunk, lx, sy, lz, n) {
     const h = 3 + Math.floor(((n * 17.3) % 1) * 5)
-    for (let dy = 0; dy < h; dy++) this._safeSet(chunk, lx, sy + dy, lz, B.packed_ice)
+    for (let dy = 0; dy < h; dy++) this._forceSet(chunk, lx, sy + dy, lz, B.packed_ice)
     this._safeSet(chunk, lx, sy + h, lz, B.ice)
 
     if (((n * 31.7) % 1) > 0.7) {
@@ -1096,7 +1103,7 @@ export class WorldGen {
   /** Lollipop tree: frosted_log trunk + crystal sphere crown + glowstone tip. */
   _placeLollipopTree(chunk, lx, sy, lz) {
     for (let dy = 0; dy < 4; dy++) {
-      this._safeSet(chunk, lx, sy + dy, lz, B.frosted_log)
+      this._forceSet(chunk, lx, sy + dy, lz, B.frosted_log)
     }
     const top    = sy + 4
     const headId = this._nDetail(lx * 0.5, lz * 0.5) > 0 ? B.crystal_green : B.crystal_blue
@@ -1114,7 +1121,7 @@ export class WorldGen {
   _placeCandyCane(chunk, lx, sy, lz) {
     const h = 4 + Math.floor(Math.random() * 4)
     for (let dy = 0; dy < h; dy++) {
-      this._safeSet(chunk, lx, sy + dy, lz, (dy % 2 === 0) ? B.candy_red : B.cloud_block)
+      this._forceSet(chunk, lx, sy + dy, lz, (dy % 2 === 0) ? B.candy_red : B.cloud_block)
     }
   }
 
@@ -1132,8 +1139,8 @@ export class WorldGen {
 
   /** Cotton candy bush: 2-block candy_yellow trunk + 3×3×2 cloud_block top. */
   _placeCottonCandyBush(chunk, lx, sy, lz) {
-    this._safeSet(chunk, lx, sy,     lz, B.candy_yellow)
-    this._safeSet(chunk, lx, sy + 1, lz, B.candy_yellow)
+    this._forceSet(chunk, lx, sy,     lz, B.candy_yellow)
+    this._forceSet(chunk, lx, sy + 1, lz, B.candy_yellow)
     const top = sy + 2
     for (let dy = 0; dy < 2; dy++) {
       for (let dx = -1; dx <= 1; dx++) {
@@ -1158,7 +1165,7 @@ export class WorldGen {
     for (let dy = 0; dy < trunkH; dy++) {
       for (let tx = 0; tx <= 1; tx++) {
         for (let tz = 0; tz <= 1; tz++) {
-          this._safeSet(chunk, lx + tx, by + dy, lz + tz, B.jungle_log)
+          this._forceSet(chunk, lx + tx, by + dy, lz + tz, B.jungle_log)
         }
       }
     }
@@ -1200,7 +1207,7 @@ export class WorldGen {
 
     // Trunk
     for (let dy = 0; dy < trunkH; dy++) {
-      this._safeSet(chunk, lx, by + dy, lz, B.bloodwood_log)
+      this._forceSet(chunk, lx, by + dy, lz, B.bloodwood_log)
     }
 
     // Spherical crown of bloodwood leaves (slightly squashed Y)
@@ -1255,6 +1262,14 @@ export class WorldGen {
     if (lx < 0 || lx >= CHUNK_W || lz < 0 || lz >= CHUNK_W) return
     if (y < 0 || y >= CHUNK_H) return
     if (chunk.getBlock(lx, y, lz) === 0) chunk.setBlock(lx, y, lz, id)
+  }
+
+  /** Like _safeSet but also overwrites surface decorations — used for tree trunks. */
+  _forceSet(chunk, lx, y, lz, id) {
+    if (lx < 0 || lx >= CHUNK_W || lz < 0 || lz >= CHUNK_W) return
+    if (y < 0 || y >= CHUNK_H) return
+    const existing = chunk.getBlock(lx, y, lz)
+    if (existing === 0 || SURFACE_DECO.has(existing)) chunk.setBlock(lx, y, lz, id)
   }
 
   /** Like _safeSet but also requires a solid block directly below — prevents floating on slopes. */

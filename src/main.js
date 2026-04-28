@@ -709,6 +709,19 @@ async function runGame(worldConfig, netOpts = {}) {
       network?.sendBlockChange(x, y, z, 0)
       lightingSystem.blockBroken(x, y, z)
       if (def?.liquid) particleSystem.emitWaterSplash(x + 0.5, y + 0.5, z + 0.5)
+
+      // Remove any surface decoration sitting on top of the broken block
+      const aboveId  = world.getBlock(x, y + 1, z)
+      const aboveDef = aboveId ? BLOCK_BY_ID.get(aboveId) : null
+      if (aboveDef && aboveDef.solid === false && !aboveDef.liquid) {
+        world.setBlock(x, y + 1, z, 0)
+        waterSystem.onBlockChange(x, y + 1, z, 0, aboveId)
+        bloodWaterSystem.onBlockChange(x, y + 1, z, 0, aboveId)
+        network?.sendBlockChange(x, y + 1, z, 0)
+        lightingSystem.blockBroken(x, y + 1, z)
+        const [ar, ag, ab] = getBlockColor(aboveDef)
+        particleSystem.emitBlockBreak(x, y + 1, z, ar, ag, ab)
+      }
     }
     soundSystem.onBlockBreak(oldId)
     const [r, g, b] = getBlockColor(oldDef)
