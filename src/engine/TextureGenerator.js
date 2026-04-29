@@ -3039,6 +3039,340 @@ DRAW.fireworkRainbow = ctx => {
 }
 
 // ─────────────────────────────────────────────────────────────
+//  Phase 22 — Farming
+// ─────────────────────────────────────────────────────────────
+
+DRAW.farmlandTop = ctx => {
+  fill(ctx, P.farmDirt)
+  // Lighter ridge highlights between furrows
+  for (let y = 0; y < S; y += 4) {
+    rect(ctx, 0, y,     S, 2, P.farmDirtMid)
+    rect(ctx, 0, y + 2, S, 2, P.farmFurrow)
+  }
+  // Top-left bevel
+  rect(ctx, 0, 0, S, 1, shade(P.farmDirtMid, 0.12))
+  rect(ctx, 0, 0, 1, S, shade(P.farmDirtMid, 0.08))
+  // Subtle soil specks
+  for (const [x, y] of [[3,1],[9,3],[5,5],[13,1],[2,9],[11,7],[6,13],[14,11]])
+    px(ctx, x, y, P.farmFurrow)
+}
+
+DRAW.farmlandSide = ctx => {
+  fill(ctx, P.farmDirtMid)
+  for (const [x, y] of [[2,3],[7,1],[12,4],[4,7],[10,5],[1,10],[8,9],[13,12],[3,14]])
+    px(ctx, x, y, P.farmFurrow)
+  rect(ctx, 0, 0, S, 2, P.farmDirt)  // dark top band (beneath farmland surface)
+  rect(ctx, 0, 0, 1, S, shade(P.farmDirtMid, 0.08))
+}
+
+// ── Wheat ─────────────────────────────────────────────────────
+
+DRAW.wheat1 = ctx => {
+  ctx.clearRect(0, 0, S, S)
+  // Two tiny green sprouts near centre
+  rect(ctx, 6, 11, 1, 4, P.cropStem)
+  rect(ctx, 9, 12, 1, 3, P.cropStem)
+  px(ctx, 5, 10, P.cropLeaf)
+  px(ctx, 7, 11, P.cropLeaf)
+  px(ctx, 8, 11, P.cropLeaf)
+  px(ctx, 10, 12, P.cropLeaf)
+}
+
+DRAW.wheat2 = ctx => {
+  ctx.clearRect(0, 0, S, S)
+  // Several green wheat blades at mid height
+  rect(ctx, 4, 7, 1, 8, P.cropStem)
+  rect(ctx, 7, 5, 1, 10, P.cropStem2)
+  rect(ctx, 10, 6, 1, 9, P.cropStem)
+  rect(ctx, 13, 8, 1, 7, P.cropStem)
+  // Leaf blades — short angled strokes
+  rect(ctx, 3, 9,  2, 1, P.cropLeaf)
+  rect(ctx, 5, 7,  3, 1, P.cropLeaf)
+  rect(ctx, 8, 6,  3, 1, P.cropLeaf2)
+  rect(ctx, 11, 8, 2, 1, P.cropLeaf)
+  rect(ctx, 12, 10,2, 1, P.cropLeaf)
+}
+
+DRAW.wheat3 = ctx => {
+  ctx.clearRect(0, 0, S, S)
+  // Golden stalks
+  rect(ctx, 3,  7, 1, 8, P.wheatStalk)
+  rect(ctx, 6,  4, 1, 11, P.wheatStalk)
+  rect(ctx, 9,  5, 1, 10, P.wheatStalk)
+  rect(ctx, 12, 6, 1, 9, P.wheatStalk)
+  // Wheat heads at top — golden grain clusters
+  rect(ctx, 2,  3, 3, 5, P.wheatGold)
+  rect(ctx, 5,  1, 3, 5, P.wheatGold)
+  rect(ctx, 8,  2, 3, 5, P.wheatGold)
+  rect(ctx, 11, 3, 3, 4, P.wheatGold)
+  // Grain detail lines
+  for (const [x, y] of [[2,4],[3,3],[6,2],[7,3],[9,3],[10,4],[12,4],[13,5]])
+    px(ctx, x, y, shade(P.wheatGold, -0.20))
+  // Bright tips
+  for (const [x, y] of [[3,4],[7,2],[10,3],[13,4]])
+    px(ctx, x, y, shade(P.wheatGold, 0.22))
+}
+
+// ── Carrot ────────────────────────────────────────────────────
+
+DRAW.carrot1 = ctx => {
+  ctx.clearRect(0, 0, S, S)
+  // Tiny orange tip barely breaking soil
+  px(ctx, 7, 13, P.carrotColor)
+  px(ctx, 8, 13, P.carrotColor)
+  // Tiny green tuft
+  rect(ctx, 6, 10, 1, 3, P.cropStem)
+  rect(ctx, 8, 11, 1, 2, P.cropStem)
+  rect(ctx, 10, 10, 1, 3, P.cropStem)
+}
+
+DRAW.carrot2 = ctx => {
+  ctx.clearRect(0, 0, S, S)
+  // Orange carrot body more visible
+  rect(ctx, 7, 10, 2, 5, P.carrotColor)
+  px(ctx, 7, 14, shade(P.carrotColor, -0.15))
+  // Green bushy top
+  rect(ctx, 5, 6, 2, 5, P.cropStem2)
+  rect(ctx, 7, 5, 2, 5, P.cropLeaf2)
+  rect(ctx, 9, 6, 2, 5, P.cropStem2)
+  rect(ctx, 4, 7, 1, 3, P.cropLeaf)
+  rect(ctx, 11, 7, 1, 3, P.cropLeaf)
+}
+
+DRAW.carrot3 = ctx => {
+  ctx.clearRect(0, 0, S, S)
+  // Bright full carrot
+  rect(ctx, 6, 9, 4, 6, P.carrotBright)
+  rect(ctx, 7, 8, 2, 7, P.carrotBright)
+  px(ctx, 7, 14, shade(P.carrotBright, -0.20))
+  px(ctx, 8, 14, shade(P.carrotBright, -0.20))
+  // Highlight stripe
+  rect(ctx, 7, 9, 1, 4, shade(P.carrotBright, 0.20))
+  // Leafy green top
+  rect(ctx, 4, 3, 2, 6, P.cropStem2)
+  rect(ctx, 6, 2, 2, 7, P.cropLeaf2)
+  rect(ctx, 8, 2, 2, 7, P.cropLeaf2)
+  rect(ctx, 10, 3, 2, 6, P.cropStem2)
+  rect(ctx, 3, 5, 1, 3, P.cropLeaf)
+  rect(ctx, 12, 5, 1, 3, P.cropLeaf)
+}
+
+// ── Potato ────────────────────────────────────────────────────
+
+DRAW.potato1 = ctx => {
+  ctx.clearRect(0, 0, S, S)
+  // Two tiny green shoots
+  rect(ctx, 6, 10, 1, 5, P.cropStem2)
+  rect(ctx, 9, 11, 1, 4, P.cropStem2)
+  px(ctx, 5, 9, P.cropLeaf2)
+  px(ctx, 7, 10, P.cropLeaf2)
+  px(ctx, 10, 11, P.cropLeaf2)
+}
+
+DRAW.potato2 = ctx => {
+  ctx.clearRect(0, 0, S, S)
+  // Leafy green plant, mid height
+  rect(ctx, 6, 8, 1, 7, P.cropStem2)
+  rect(ctx, 9, 7, 1, 8, P.cropStem2)
+  // Side leaves
+  rect(ctx, 3, 9, 3, 2, P.cropLeaf2)
+  rect(ctx, 7, 7, 3, 2, P.cropLeaf2)
+  rect(ctx, 10, 8, 3, 2, P.cropLeaf2)
+  rect(ctx, 4, 11, 2, 1, P.cropLeaf)
+  rect(ctx, 11, 10, 2, 1, P.cropLeaf)
+  // Leaf tips
+  px(ctx, 5, 8,  shade(P.cropLeaf2, 0.10))
+  px(ctx, 9, 6,  shade(P.cropLeaf2, 0.10))
+  px(ctx, 12, 7, shade(P.cropLeaf2, 0.10))
+}
+
+DRAW.potato3 = ctx => {
+  ctx.clearRect(0, 0, S, S)
+  // Full green plant
+  rect(ctx, 5, 5, 1, 10, P.cropStem2)
+  rect(ctx, 8, 4, 1, 11, P.cropStem2)
+  rect(ctx, 11, 6, 1, 9, P.cropStem2)
+  // Leaves at sides
+  rect(ctx, 2, 7, 3, 3, P.cropLeaf2)
+  rect(ctx, 6, 5, 3, 3, P.cropLeaf2)
+  rect(ctx, 9, 6, 3, 3, P.cropLeaf2)
+  rect(ctx, 12, 8, 3, 3, P.cropLeaf2)
+  // White potato flowers
+  px(ctx, 5, 4, '#FFFFFF'); px(ctx, 6, 3, '#FFFFFF')
+  px(ctx, 8, 3, '#FFFFFF'); px(ctx, 9, 2, '#FFFFFF')
+  px(ctx, 11, 5, '#FFFFFF'); px(ctx, 12, 4, '#FFFFFF')
+  // Yellow centres
+  px(ctx, 6, 4, '#FFE840'); px(ctx, 9, 3, '#FFE840'); px(ctx, 12, 5, '#FFE840')
+}
+
+// ── Tomato ────────────────────────────────────────────────────
+
+DRAW.tomato1 = ctx => {
+  ctx.clearRect(0, 0, S, S)
+  // Small vine sprout
+  rect(ctx, 7, 9, 1, 6, P.cropStem)
+  rect(ctx, 6, 10, 2, 1, P.cropStem) // small leaf
+  px(ctx, 5, 9, P.cropLeaf)
+  px(ctx, 8, 11, P.cropLeaf)
+}
+
+DRAW.tomato2 = ctx => {
+  ctx.clearRect(0, 0, S, S)
+  // Growing vine with side branches
+  rect(ctx, 7, 5, 1, 10, P.cropStem)
+  rect(ctx, 4, 7, 3, 1, P.cropStem) // left branch
+  rect(ctx, 8, 8, 3, 1, P.cropStem) // right branch
+  // Leaves at branch ends
+  rect(ctx, 2, 6, 3, 2, P.cropLeaf2)
+  rect(ctx, 9, 7, 3, 2, P.cropLeaf2)
+  // Yellow flower buds
+  px(ctx, 3, 5, P.tomatoFlower); px(ctx, 4, 4, P.tomatoFlower)
+  px(ctx, 10, 6, P.tomatoFlower); px(ctx, 11, 5, P.tomatoFlower)
+}
+
+DRAW.tomato3 = ctx => {
+  ctx.clearRect(0, 0, S, S)
+  // Vine
+  rect(ctx, 7, 3, 1, 12, P.cropStem)
+  rect(ctx, 3, 6, 4, 1, P.cropStem)
+  rect(ctx, 8, 8, 4, 1, P.cropStem)
+  rect(ctx, 4, 10, 3, 1, P.cropStem)
+  // Leaves
+  rect(ctx, 1, 5, 3, 2, P.cropLeaf2)
+  rect(ctx, 11, 7, 3, 2, P.cropLeaf2)
+  // Red tomatoes
+  rect(ctx, 2, 7, 3, 3, P.tomatoRed); rect(ctx, 3, 6, 1, 5, P.tomatoRed)
+  rect(ctx, 10, 9, 3, 3, P.tomatoRed); rect(ctx, 11, 8, 1, 5, P.tomatoRed)
+  rect(ctx, 5, 11, 3, 3, P.tomatoRed); rect(ctx, 6, 10, 1, 5, P.tomatoRed)
+  // Tomato highlights
+  px(ctx, 3, 8, shade(P.tomatoRed, 0.22))
+  px(ctx, 11, 10, shade(P.tomatoRed, 0.22))
+  px(ctx, 6, 12, shade(P.tomatoRed, 0.22))
+  // Tiny green stems on tomatoes
+  px(ctx, 3, 7, P.cropStem); px(ctx, 11, 9, P.cropStem); px(ctx, 6, 11, P.cropStem)
+}
+
+// ── Onion ─────────────────────────────────────────────────────
+
+DRAW.onion1 = ctx => {
+  ctx.clearRect(0, 0, S, S)
+  // Single thin green shoot
+  rect(ctx, 7, 8, 2, 7, P.onionStem)
+  // Slightly wider base
+  rect(ctx, 6, 13, 4, 2, shade(P.onionStem, -0.15))
+  px(ctx, 8, 7, shade(P.onionStem, 0.14))
+}
+
+DRAW.onion2 = ctx => {
+  ctx.clearRect(0, 0, S, S)
+  // Three tall green stalks
+  rect(ctx, 4, 6, 2, 9, P.onionStem)
+  rect(ctx, 7, 4, 2, 11, P.onionStem)
+  rect(ctx, 11, 5, 2, 10, P.onionStem)
+  // Tips curve slightly
+  px(ctx, 4, 5, shade(P.onionStem, 0.14))
+  px(ctx, 7, 3, shade(P.onionStem, 0.14))
+  px(ctx, 11, 4, shade(P.onionStem, 0.14))
+  // Small base bulge suggestion
+  rect(ctx, 3, 14, 10, 1, shade(P.onionStem, -0.20))
+}
+
+DRAW.onion3 = ctx => {
+  ctx.clearRect(0, 0, S, S)
+  // Tall green stalks
+  rect(ctx, 5, 3, 2, 8, P.onionStem)
+  rect(ctx, 8, 2, 2, 8, P.onionStem)
+  rect(ctx, 11, 4, 2, 7, P.onionStem)
+  px(ctx, 5, 2, shade(P.onionStem, 0.14))
+  px(ctx, 8, 1, shade(P.onionStem, 0.14))
+  // Onion bulb — round purple shape
+  rect(ctx, 4, 9, 8, 6, P.onionBulb)
+  rect(ctx, 3, 10, 10, 4, P.onionBulb)
+  rect(ctx, 5, 8, 6, 7, P.onionBulb)
+  // Inner rings
+  rect(ctx, 5, 10, 6, 3, mix(P.onionBulb, '#F0E8F0', 0.35))
+  // Highlight
+  rect(ctx, 6, 10, 2, 2, shade(P.onionBulb, 0.25))
+  // Root fringe
+  rect(ctx, 5, 14, 6, 1, shade(P.onionBulb, -0.25))
+}
+
+// ── Scarecrow ─────────────────────────────────────────────────
+
+DRAW.scarecrow = ctx => {
+  ctx.clearRect(0, 0, S, S)
+  // Post
+  rect(ctx, 7, 4, 2, 11, P.scarecrowPost)
+  // Arms (horizontal crossbar)
+  rect(ctx, 2, 6, 12, 2, P.scarecrowPost)
+  // Body / torso rag
+  rect(ctx, 5, 8, 6, 5, P.scarecrowBody)
+  rect(ctx, 6, 7, 4, 6, P.scarecrowBody)
+  // Shirt stitch lines
+  rect(ctx, 6, 9, 4, 1, shade(P.scarecrowBody, -0.18))
+  rect(ctx, 6, 11, 4, 1, shade(P.scarecrowBody, -0.18))
+  // Hat brim
+  rect(ctx, 3, 3, 10, 2, P.scarecrowHat)
+  // Hat top
+  rect(ctx, 5, 0, 6, 4, P.scarecrowHat)
+  px(ctx, 5, 0, shade(P.scarecrowHat, 0.15))
+  px(ctx, 10, 0, shade(P.scarecrowHat, 0.15))
+  // Hat band
+  rect(ctx, 5, 2, 6, 1, shade(P.scarecrowHat, -0.25))
+  // Straw poking from sleeves
+  for (const [x, y] of [[1,7],[2,8],[13,7],[14,8]])
+    px(ctx, x, y, P.wheatStalk)
+}
+
+// ── Watering Can ──────────────────────────────────────────────
+
+DRAW.wateringCan = ctx => {
+  ctx.clearRect(0, 0, S, S)
+  // Main body
+  rect(ctx, 3, 6, 8, 7, P.waterCan)
+  rect(ctx, 2, 7, 10, 5, P.waterCan)
+  // Handle (top arc)
+  rect(ctx, 9, 3, 3, 4, P.waterCan)
+  rect(ctx, 10, 3, 2, 1, P.waterCan)
+  rect(ctx, 11, 3, 1, 5, P.waterCan)
+  // Spout (left side, angled up)
+  rect(ctx, 0, 4, 4, 2, P.waterCan)
+  rect(ctx, 1, 3, 2, 2, P.waterCan)
+  // Spout holes (darker dots)
+  px(ctx, 0, 3, P.waterCanDk)
+  px(ctx, 1, 2, P.waterCanDk)
+  px(ctx, 2, 3, P.waterCanDk)
+  // Body highlight (left face)
+  rect(ctx, 3, 6, 2, 7, P.waterCanHi)
+  rect(ctx, 4, 6, 1, 1, shade(P.waterCanHi, 0.20))
+  // Body shadow (right edge + bottom)
+  rect(ctx, 9, 7, 2, 5, P.waterCanDk)
+  rect(ctx, 3, 12, 8, 1, P.waterCanDk)
+  // Rim line at top of body
+  rect(ctx, 3, 6, 8, 1, shade(P.waterCan, 0.20))
+}
+
+DRAW.hoe = ctx => {
+  ctx.clearRect(0, 0, S, S)
+  // Handle: diagonal from bottom-right to top-left
+  for (let i = 0; i < 10; i++) {
+    rect(ctx, 13 - i, 6 + i, 2, 2, P.hoeHandle)
+    px(ctx, 14 - i, 6 + i, P.hoeHandleDk)
+  }
+  // Blade (L-shape at top-left): horizontal bar
+  rect(ctx, 1, 2, 7, 3, P.hoeBlade)
+  // Blade highlight top edge
+  rect(ctx, 1, 2, 7, 1, shade(P.hoeBlade, 0.20))
+  // Blade shadow bottom edge
+  rect(ctx, 1, 4, 7, 1, P.hoeBladeDk)
+  // Blade vertical prong
+  rect(ctx, 2, 4, 3, 3, P.hoeBlade)
+  rect(ctx, 2, 6, 3, 1, P.hoeBladeDk)
+  // Connection between handle and blade
+  rect(ctx, 5, 5, 2, 2, P.hoeBladeDk)
+}
+
+// ─────────────────────────────────────────────────────────────
 //  Colour blocks (generated dynamically)
 // ─────────────────────────────────────────────────────────────
 for (const color of COLORS_16) {

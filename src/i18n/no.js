@@ -217,6 +217,10 @@ export default {
   settings_controls:      'Kontroller',
   settings_colorblind:    'Fargeblindmodus',
   settings_show_fps:      'Vis FPS',
+  settings_farm_speed:    'Veksthastighet for avlinger',
+  settings_farm_fast:     'Rask (1 dag per trinn)',
+  settings_farm_normal:   'Normal (2 dager per trinn)',
+  settings_farm_slow:     'Sakte (3 dager per trinn)',
   settings_apply:         'Bruk',
 
   // ── Kontrollreferanse ────────────────────────────────────

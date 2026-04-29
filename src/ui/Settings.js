@@ -9,11 +9,12 @@ import { LANGUAGES, DAY_DURATIONS_MIN } from '../data/constants.js'
 const STORAGE_KEY = 'kl_settings'
 
 export const DEFAULT_SETTINGS = {
-  dayDurationMin: 20,
-  showFPS:        false,
-  volume:         0.8,
-  sfxVolume:      1.0,
-  ambientVolume:  0.45,
+  dayDurationMin:  20,
+  showFPS:         false,
+  volume:          0.8,
+  sfxVolume:       1.0,
+  ambientVolume:   0.45,
+  farmGrowthDays:  1,   // in-game days per crop stage (1=fast, 2=normal, 3=slow)
 }
 
 export function loadSettings() {
@@ -121,6 +122,17 @@ export class Settings {
         </section>
 
         <section class="settings-section">
+          <h3>${t('settings_farm_speed')}</h3>
+          <div class="radio-group">
+            ${[1, 2, 3].map((days, i) => `
+              <label class="radio-label">
+                <input type="radio" name="farmdays" value="${days}" ${(s.farmGrowthDays ?? 1) === days ? 'checked' : ''}>
+                ${t(['settings_farm_fast', 'settings_farm_normal', 'settings_farm_slow'][i])}
+              </label>`).join('')}
+          </div>
+        </section>
+
+        <section class="settings-section">
           <label class="toggle-row">
             <span>${t('settings_show_fps')}</span>
             <input type="checkbox" id="chk-fps" ${s.showFPS ? 'checked' : ''}>
@@ -166,7 +178,10 @@ export class Settings {
       const sfxVolume    = parseInt(this._el.querySelector('#sld-sfx').value, 10) / 100
       const ambientVolume= parseInt(this._el.querySelector('#sld-amb').value, 10) / 100
 
-      Object.assign(this._settings, { dayDurationMin: dayMin, showFPS, volume, sfxVolume, ambientVolume })
+      const checkedFarm  = this._el.querySelector('input[name="farmdays"]:checked')
+      const farmGrowthDays = checkedFarm ? parseInt(checkedFarm.value, 10) : 1
+
+      Object.assign(this._settings, { dayDurationMin: dayMin, showFPS, volume, sfxVolume, ambientVolume, farmGrowthDays })
       saveSettings(this._settings)
 
       this._unsub?.()

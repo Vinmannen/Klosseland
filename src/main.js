@@ -44,6 +44,8 @@ import { Minimap }          from './ui/Minimap.js'
 import { HUD }              from './ui/HUD.js'
 import { WeatherSystem }    from './systems/WeatherSystem.js'
 import { openChoppingBoard, openMixingBowl, openStove, openRecipeBook } from './ui/CookingUI.js'
+import { FarmSystem }  from './systems/FarmSystem.js'
+import { DropSystem }  from './systems/DropSystem.js'
 
 // ── Directional furniture placement ──────────────────────────
 // Maps camera yaw (radians) to furniture facing index 0-3.
@@ -562,6 +564,22 @@ async function runGame(worldConfig, netOpts = {}) {
   const produceBar       = new ProduceBar(inventory)
   const inventoryScreen  = new InventoryScreen(inventory)
 
+  // ── Farming ───────────────────────────────────────────────
+  const FARMLAND_ID = BLOCK_BY_KEY.get('farmland')?.id ?? 326
+  const farmSystem = new FarmSystem({
+    world,
+    worldSave:      world.save,
+    inventory,
+    particleSystem,
+  })
+  farmSystem.onAdvanceStage((bx, by, bz, newId) => {
+    world.save?.recordDelta(bx, by, bz, newId)
+    network?.sendBlockChange(bx, by, bz, newId)
+    lightingSystem.blockPlaced(bx, by, bz, newId)
+  })
+  farmSystem.init()
+  const dropSystem = new DropSystem(renderer.scene, atlas, inventory)
+
   // ── 9. Chat (multiplayer only) ───────────────────────────
   let chatUI = null
   if (network) {
@@ -816,6 +834,10 @@ async function runGame(worldConfig, netOpts = {}) {
         world.save?.deleteMeta(x, y, z)
         removeSignMesh(x, y, z)
       }
+      if (def?.isCrop) {
+        const harvestId = farmSystem.harvestCrop(x, y, z, def)
+        if (harvestId) dropSystem.spawnDrop(x, y, z, harvestId)
+      }
 
       // Remove any surface decoration sitting on top of the broken block
       const aboveId  = world.getBlock(x, y + 1, z)
@@ -828,6 +850,7 @@ async function runGame(worldConfig, netOpts = {}) {
         lightingSystem.blockBroken(x, y + 1, z)
         const [ar, ag, ab] = getBlockColor(aboveDef)
         particleSystem.emitBlockBreak(x, y + 1, z, ar, ag, ab)
+        if (aboveDef.isCrop) farmSystem.removeCrop(x, y + 1, z)
       }
     }
     soundSystem.onBlockBreak(oldId)
@@ -1332,6 +1355,78 @@ async function runGame(worldConfig, netOpts = {}) {
             } else {
               // Directional furniture: pick the variant matching the camera yaw
               const selectedDef = BLOCK_BY_ID.get(selectedId)
+
+              // ── Hoe: harvest mature crops / till dirt ───────────
+              if (selectedDef?.isHoe) {
+                const _lang = localStorage.getItem('kl_lang') || 'en'
+                const hitId  = world.getBlock(ray.bx, ray.by, ray.bz)
+                const hitDef = BLOCK_BY_ID.get(hitId)
+                // Non-solid crops are above the hit solid block — check one up too
+                let cropX = ray.bx, cropY = ray.by, cropZ = ray.bz
+                if (!hitDef?.isCrop) {
+                  const aboveDef = BLOCK_BY_ID.get(world.getBlock(ray.bx, ray.by + 1, ray.bz))
+                  if (aboveDef?.isCrop) cropY = ray.by + 1
+                }
+                const targetId  = world.getBlock(cropX, cropY, cropZ)
+                const targetDef = BLOCK_BY_ID.get(targetId)
+
+                if (targetDef?.isCrop) {
+                  if (targetDef.cropStage === 3) {
+                    // Harvest: remove crop, leave farmland, spawn drop
+                    const harvestId = farmSystem.harvestCrop(cropX, cropY, cropZ, targetDef)
+                    world.setBlock(cropX, cropY, cropZ, 0)
+                    world.save?.recordDelta(cropX, cropY, cropZ, 0)
+                    network?.sendBlockChange(cropX, cropY, cropZ, 0)
+                    lightingSystem.blockBroken(cropX, cropY, cropZ)
+                    particleSystem.emitBlockBreak(cropX + 0.5, cropY + 0.5, cropZ + 0.5, 0.3, 0.85, 0.2)
+                    soundSystem.onBlockBreak(targetId)
+                    if (harvestId) dropSystem.spawnDrop(cropX, cropY, cropZ, harvestId)
+                  } else {
+                    showToast(_lang === 'no' ? 'Ikke klar til høsting ennå!' : 'Not ready to harvest yet!')
+                  }
+                } else if (hitDef?.key === 'dirt' || hitDef?.key === 'grass') {
+                  // Till dirt/grass into farmland
+                  world.setBlock(ray.bx, ray.by, ray.bz, FARMLAND_ID)
+                  world.save?.recordDelta(ray.bx, ray.by, ray.bz, FARMLAND_ID)
+                  network?.sendBlockChange(ray.bx, ray.by, ray.bz, FARMLAND_ID)
+                  lightingSystem.blockPlaced(ray.bx, ray.by, ray.bz, FARMLAND_ID)
+                  soundSystem.onBlockPlace(selectedId)
+                  renderer.triggerPlaceAnim(ray.bx, ray.by, ray.bz)
+                } else {
+                  showToast(_lang === 'no' ? 'Bruk hakken på avlinger eller jord.' : 'Use the hoe on crops or dirt.')
+                }
+                // hoe never places a block
+              } else
+
+              // ── Watering can: water crop instead of placing ─────
+              if (selectedDef?.isWateringCan) {
+                const _lang = localStorage.getItem('kl_lang') || 'en'
+                // Crops are non-solid so the ray hits the farmland below them.
+                // Check the hit block first, then the block above (the crop slot).
+                let cropX = ray.bx, cropY = ray.by, cropZ = ray.bz
+                const hitId  = world.getBlock(ray.bx, ray.by, ray.bz)
+                const hitDef = BLOCK_BY_ID.get(hitId)
+                if (!hitDef?.isCrop) {
+                  const aboveId  = world.getBlock(ray.bx, ray.by + 1, ray.bz)
+                  const aboveDef = BLOCK_BY_ID.get(aboveId)
+                  if (aboveDef?.isCrop) cropY = ray.by + 1
+                }
+                const targetDef = BLOCK_BY_ID.get(world.getBlock(cropX, cropY, cropZ))
+                if (targetDef?.isCrop) {
+                  if (farmSystem.water(cropX, cropY, cropZ)) {
+                    soundSystem.onBlockPlace(selectedId)
+                    network?.sendBlockChange(cropX, cropY, cropZ, world.getBlock(cropX, cropY, cropZ))
+                    lightingSystem.blockPlaced(cropX, cropY, cropZ, world.getBlock(cropX, cropY, cropZ))
+                    showToast(_lang === 'no' ? 'Vann! Avlingen vokser raskere.' : 'Watered! The crop will grow faster.')
+                  } else {
+                    showToast(_lang === 'no' ? 'Avlingen er allerede moden!' : 'This crop is already fully grown!')
+                  }
+                } else {
+                  showToast(_lang === 'no' ? 'Sikt mot en avling.' : 'Aim at a crop.')
+                }
+                // watering can is never placed — always consumed as an action
+              } else {
+
               let placeId = selectedId
               if (selectedDef?.dirGroup) {
                 placeId = selectedDef.dirGroup[yawToFacing(camera.yaw)]
@@ -1373,15 +1468,29 @@ async function runGame(worldConfig, netOpts = {}) {
                   }
                 }
               } else {
-                const oldId = world.getBlock(px, py, pz)
-                world.setBlock(px, py, pz, placeId)
-                waterSystem.onBlockChange(px, py, pz, placeId, oldId)
-                bloodWaterSystem.onBlockChange(px, py, pz, placeId, oldId)
-                soundSystem.onBlockPlace(placeId)
-                network?.sendBlockChange(px, py, pz, placeId)
-                renderer.triggerPlaceAnim(px, py, pz)
-                lightingSystem.blockPlaced(px, py, pz, placeId)
+                // Crops require farmland directly below
+                let _canPlace = true
+                if (placeDef?.isCrop) {
+                  const belowDef = BLOCK_BY_ID.get(world.getBlock(px, py - 1, pz))
+                  if (!belowDef?.isFarmland) {
+                    const _lang = localStorage.getItem('kl_lang') || 'en'
+                    showToast(_lang === 'no' ? 'Plasser på dyrket mark.' : 'Place on farmland.')
+                    _canPlace = false
+                  }
+                }
+                if (_canPlace) {
+                  const oldId = world.getBlock(px, py, pz)
+                  world.setBlock(px, py, pz, placeId)
+                  waterSystem.onBlockChange(px, py, pz, placeId, oldId)
+                  bloodWaterSystem.onBlockChange(px, py, pz, placeId, oldId)
+                  soundSystem.onBlockPlace(placeId)
+                  network?.sendBlockChange(px, py, pz, placeId)
+                  renderer.triggerPlaceAnim(px, py, pz)
+                  lightingSystem.blockPlaced(px, py, pz, placeId)
+                  if (placeDef?.isCrop) farmSystem.onCropPlaced(px, py, pz)
+                }
               }
+              }  // end watering-can else
             }
           }
 
@@ -1446,7 +1555,18 @@ async function runGame(worldConfig, netOpts = {}) {
         if (eatDef?.isFood) {
           inventory.setProduceSlot(inventory.selectedProduceSlot, null)
           const name = lang === 'no' ? eatDef.nameNo : eatDef.nameEn
-          showToast(lang === 'no' ? `Spiste ${name}!` : `Ate ${name}!`, 2200)
+          showToast(lang === 'no' ? `Spiste ${name}! 😋` : `Ate ${name}! 😋`, 2200)
+          // Colourful food-sparkle burst in front of the player
+          particleSystem.emitBlockBreak(
+            player.x + Math.sin(camera.yaw) * 0.6,
+            player.y + 1.2,
+            player.z - Math.cos(camera.yaw) * 0.6,
+            1.0, 0.85, 0.2
+          )
+        } else if (!inventory.produceSlots.some(Boolean)) {
+          showToast(lang === 'no'
+            ? 'Høst avlinger med hakken for å få mat!'
+            : 'Harvest crops with the hoe to get food!', 2000)
         }
       }
 
@@ -1486,6 +1606,8 @@ async function runGame(worldConfig, netOpts = {}) {
       }
 
       dayNightCycle.update(dt, DAY_DURATION_S, player.x, player.y, player.z)
+      farmSystem.update(dt, DAY_DURATION_S, gameSettings.farmGrowthDays ?? 1)
+      dropSystem.update(dt, player.x, player.y, player.z, showToast, lang)
       const currentBiome = world.getBiomeAt(player.x, player.z)
       renderer.updateBiomeFog(currentBiome, dt)
       weatherSystem.setBiome(currentBiome)

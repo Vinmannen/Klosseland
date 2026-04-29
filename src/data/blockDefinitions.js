@@ -1,5 +1,5 @@
-// ─────────────────────────────────────────────────────────────
-//  Klosseland — Block Definitions
+﻿// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+//  Klosseland â€” Block Definitions
 //
 //  Each block:
 //    id          unique numeric ID (0 = air)
@@ -11,21 +11,21 @@
 //    sound       SOUND_GROUP key
 //    transparent block is see-through (no face-culling against it)
 //    liquid      renders with liquid shader
-//    luminance   0–15 glow level (0 = no glow)
+//    luminance   0â€“15 glow level (0 = no glow)
 //    solid       false means player passes through (flowers, etc.)
-// ─────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 import { SOUND_GROUP } from './constants.js'
 
 const S = SOUND_GROUP
 
-// Helper – single texture for all faces
+// Helper â€“ single texture for all faces
 function allFaces(style) { return { all: style } }
-// Helper – different top / side / bottom
+// Helper â€“ different top / side / bottom
 function topSideBottom(top, side, bottom) { return { top, side, bottom } }
-// Helper – same on all sides but different top
+// Helper â€“ same on all sides but different top
 function topAndSide(top, sides) { return { top, side: sides, bottom: sides } }
 
-// ── Colour palette (hex) used by the texture generator ───────
+// â”€â”€ Colour palette (hex) used by the texture generator â”€â”€â”€â”€â”€â”€â”€
 export const PALETTE = {
   // Nature
   grassTop:     '#6CC952',
@@ -45,38 +45,38 @@ export const PALETTE = {
   water:        '#1a5282',   // deep natural water base
   waterLight:   '#52a8d0',   // surface ripple highlight
 
-  // Wood — Oak
+  // Wood â€” Oak
   oakBark:      '#8B6030',
   oakBarkDark:  '#6A4820',
   oakPlanks:    '#C8943A',
   oakPlanksDark:'#A87828',
   oakRings:     '#D4A858',
 
-  // Wood — Pine
+  // Wood â€” Pine
   pineBark:     '#5A3820',
   pineBarkDark: '#3C2410',
   pinePlanks:   '#8C6040',
   pinePlanksDark:'#6A4828',
 
-  // Wood — Birch
+  // Wood â€” Birch
   birchBark:    '#DCDCCC',
   birchBarkDark:'#A8A890',
   birchPlanks:  '#D4C890',
   birchPlanksDark:'#B0A870',
 
-  // Wood — Jungle
+  // Wood â€” Jungle
   jungleBark:   '#4E7828',
   jungleBarkDk: '#385820',
   junglePlanks: '#8C7840',
   junglePlanks2:'#6C5C30',
 
-  // Wood — Cherry
+  // Wood â€” Cherry
   cherryBark:   '#C06878',
   cherryBarkDk: '#904858',
   cherryPlanks: '#DCA0A8',
   cherryPlanks2:'#C07888',
 
-  // Wood — Dark Oak
+  // Wood â€” Dark Oak
   darkBark:     '#2E1E0E',
   darkBarkLight:'#4A3020',
   darkPlanks:   '#40280E',
@@ -215,7 +215,7 @@ export const PALETTE = {
   foodFish:     '#A0C8E0',
   foodFishC:    '#E8A040',
 
-  // B7 — Fairy Woodland
+  // B7 â€” Fairy Woodland
   willowBark:     '#C0D0A8',
   willowBarkDk:   '#8AAA78',
   willowLeaves:   '#A0C870',
@@ -235,11 +235,11 @@ export const PALETTE = {
   wispLightDk:    '#50C8F0',
   wispCore:       '#FFFFFF',
 
-  // B8 — Meadow
+  // B8 â€” Meadow
   mossyStone:     '#7A8A60',
   mossyStoneHi:   '#909870',
 
-  // B9 — Cherry
+  // B9 â€” Cherry
   petalBase:      '#F0D8E0',
   petalPink:      '#E8A8C0',
   petalWhite:     '#FFF0F4',
@@ -247,7 +247,7 @@ export const PALETTE = {
   stoneLantern:   '#484848',
   stoneLanternGlow: '#FFD870',
 
-  // B10 — Blodmark (vampire)
+  // B10 â€” Blodmark (vampire)
   vBloodBase:     '#6B0000',
   vBloodLight:    '#9B2020',
   vCrimsonMoss:   '#4A0808',
@@ -262,6 +262,33 @@ export const PALETTE = {
   vThroneWood:    '#1A0808',
   vThroneBlood:   '#7A0000',
   vThroneGold:    '#7A5800',
+
+  // Farming
+  farmDirt:       '#5C3A1A',
+  farmFurrow:     '#3A2010',
+  farmDirtMid:    '#7A5030',
+  cropStem:       '#4CAF50',
+  cropLeaf:       '#6DBF70',
+  cropStem2:      '#5CAF30',
+  cropLeaf2:      '#8CCF50',
+  wheatGold:      '#F0C040',
+  wheatStalk:     '#D4A020',
+  carrotColor:    '#E87820',
+  carrotBright:   '#FF8C00',
+  tomatoRed:      '#D03020',
+  tomatoFlower:   '#F0D040',
+  onionBulb:      '#9050B0',
+  onionStem:      '#7CBF40',
+  scarecrowPost:  '#8B5E3C',
+  scarecrowHat:   '#D4A040',
+  scarecrowBody:  '#8C7060',
+  waterCan:       '#3080C0',
+  waterCanHi:     '#4898E0',
+  waterCanDk:     '#1A5090',
+  hoeHandle:      '#A0602A',
+  hoeHandleDk:    '#7A4418',
+  hoeBlade:       '#B8B8C0',
+  hoeBladeDk:     '#808090',
 
   // Cooking stations
   chopBoardTop:   '#D4A574',
@@ -308,17 +335,17 @@ export const PALETTE = {
   dishPancake:    '#D4A060',
 }
 
-// ─────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 //  Block list
-// ─────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export const BLOCKS = [
-  // ── AIR (id 0, never in inventory) ───────────────────────
+  // â”€â”€ AIR (id 0, never in inventory) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   { id: 0, key: 'air',   nameEn: 'Air',    nameNo: 'Luft',   category: null,
     tex: null, sound: null, transparent: true, solid: false, luminance: 0 },
 
-  // ══════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   //  NATURE
-  // ══════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   { id: 1, key: 'grass',
     nameEn: 'Grass',       nameNo: 'Gress',
     category: 'nature',
@@ -356,7 +383,7 @@ export const BLOCKS = [
     sound: S.DIRT, transparent: false, solid: true, luminance: 0 },
 
   { id: 7, key: 'snow_block',
-    nameEn: 'Snow',        nameNo: 'Snø',
+    nameEn: 'Snow',        nameNo: 'SnÃ¸',
     category: 'nature',
     tex: allFaces('snow'),
     sound: S.SNOW, transparent: false, solid: true, luminance: 0 },
@@ -379,9 +406,9 @@ export const BLOCKS = [
     tex: allFaces('water'),
     sound: S.LIQUID, transparent: true, liquid: true, solid: false, luminance: 0 },
 
-  // ══════════════════════════════════════════════════════════
-  //  WOOD — OAK
-  // ══════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  //  WOOD â€” OAK
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   { id: 11, key: 'oak_log',
     nameEn: 'Oak Log',     nameNo: 'Eiketresstamme',
     category: 'wood',
@@ -394,7 +421,7 @@ export const BLOCKS = [
     tex: allFaces('oakPlanks'),
     sound: S.WOOD, transparent: false, solid: true, luminance: 0 },
 
-  // ── PINE ─────────────────────────────────────────────────
+  // â”€â”€ PINE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   { id: 13, key: 'pine_log',
     nameEn: 'Pine Log',    nameNo: 'Furutresstamme',
     category: 'wood',
@@ -407,20 +434,20 @@ export const BLOCKS = [
     tex: allFaces('pinePlanks'),
     sound: S.WOOD, transparent: false, solid: true, luminance: 0 },
 
-  // ── BIRCH ────────────────────────────────────────────────
+  // â”€â”€ BIRCH â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   { id: 15, key: 'birch_log',
-    nameEn: 'Birch Log',   nameNo: 'Bjørketresstamme',
+    nameEn: 'Birch Log',   nameNo: 'BjÃ¸rketresstamme',
     category: 'wood',
     tex: topAndSide('birchLogTop', 'birchLogSide'),
     sound: S.WOOD, transparent: false, solid: true, luminance: 0 },
 
   { id: 16, key: 'birch_planks',
-    nameEn: 'Birch Planks',nameNo: 'Bjørkebord',
+    nameEn: 'Birch Planks',nameNo: 'BjÃ¸rkebord',
     category: 'wood',
     tex: allFaces('birchPlanks'),
     sound: S.WOOD, transparent: false, solid: true, luminance: 0 },
 
-  // ── JUNGLE ───────────────────────────────────────────────
+  // â”€â”€ JUNGLE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   { id: 17, key: 'jungle_log',
     nameEn: 'Jungle Log',  nameNo: 'Jungelstamme',
     category: 'wood',
@@ -433,35 +460,35 @@ export const BLOCKS = [
     tex: allFaces('junglePlanks'),
     sound: S.WOOD, transparent: false, solid: true, luminance: 0 },
 
-  // ── CHERRY ───────────────────────────────────────────────
+  // â”€â”€ CHERRY â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   { id: 19, key: 'cherry_log',
-    nameEn: 'Cherry Log',  nameNo: 'Kirsebærstamme',
+    nameEn: 'Cherry Log',  nameNo: 'KirsebÃ¦rstamme',
     category: 'wood',
     tex: topAndSide('cherryLogTop', 'cherryLogSide'),
     sound: S.WOOD, transparent: false, solid: true, luminance: 0 },
 
   { id: 20, key: 'cherry_planks',
-    nameEn: 'Cherry Planks',nameNo: 'Kirsebærbord',
+    nameEn: 'Cherry Planks',nameNo: 'KirsebÃ¦rbord',
     category: 'wood',
     tex: allFaces('cherryPlanks'),
     sound: S.WOOD, transparent: false, solid: true, luminance: 0 },
 
-  // ── DARK OAK ─────────────────────────────────────────────
+  // â”€â”€ DARK OAK â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   { id: 21, key: 'dark_oak_log',
-    nameEn: 'Dark Oak Log',    nameNo: 'Mørk eiketresstamme',
+    nameEn: 'Dark Oak Log',    nameNo: 'MÃ¸rk eiketresstamme',
     category: 'wood',
     tex: topAndSide('darkOakLogTop', 'darkOakLogSide'),
     sound: S.WOOD, transparent: false, solid: true, luminance: 0 },
 
   { id: 22, key: 'dark_oak_planks',
-    nameEn: 'Dark Oak Planks', nameNo: 'Mørke eikebord',
+    nameEn: 'Dark Oak Planks', nameNo: 'MÃ¸rke eikebord',
     category: 'wood',
     tex: allFaces('darkOakPlanks'),
     sound: S.WOOD, transparent: false, solid: true, luminance: 0 },
 
-  // ══════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   //  LEAVES & PLANTS
-  // ══════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   { id: 23, key: 'oak_leaves',
     nameEn: 'Oak Leaves',    nameNo: 'Eikeblader',
     category: 'plants',
@@ -469,13 +496,13 @@ export const BLOCKS = [
     sound: S.LEAVES, transparent: true, solid: true, luminance: 0, waving: true },
 
   { id: 24, key: 'pine_leaves',
-    nameEn: 'Pine Needles',  nameNo: 'Furunåler',
+    nameEn: 'Pine Needles',  nameNo: 'FurunÃ¥ler',
     category: 'plants',
     tex: allFaces('pineLeaves'),
     sound: S.LEAVES, transparent: true, solid: true, luminance: 0, waving: true },
 
   { id: 25, key: 'birch_leaves',
-    nameEn: 'Birch Leaves',  nameNo: 'Bjørkeblader',
+    nameEn: 'Birch Leaves',  nameNo: 'BjÃ¸rkeblader',
     category: 'plants',
     tex: allFaces('birchLeaves'),
     sound: S.LEAVES, transparent: true, solid: true, luminance: 0, waving: true },
@@ -487,13 +514,13 @@ export const BLOCKS = [
     sound: S.LEAVES, transparent: true, solid: true, luminance: 0, waving: true },
 
   { id: 27, key: 'cherry_leaves',
-    nameEn: 'Cherry Blossoms',nameNo: 'Kirsebærblomster',
+    nameEn: 'Cherry Blossoms',nameNo: 'KirsebÃ¦rblomster',
     category: 'plants',
     tex: allFaces('cherryLeaves'),
     sound: S.LEAVES, transparent: true, solid: true, luminance: 0, waving: true },
 
   { id: 28, key: 'autumn_leaves',
-    nameEn: 'Autumn Leaves',  nameNo: 'Høstblader',
+    nameEn: 'Autumn Leaves',  nameNo: 'HÃ¸stblader',
     category: 'plants',
     tex: allFaces('autumnLeaves'),
     sound: S.LEAVES, transparent: true, solid: true, luminance: 0, waving: true },
@@ -505,7 +532,7 @@ export const BLOCKS = [
     sound: S.LEAVES, transparent: false, solid: true, luminance: 0 },
 
   { id: 30, key: 'flower_red',
-    nameEn: 'Red Flower',     nameNo: 'Rød blomst',
+    nameEn: 'Red Flower',     nameNo: 'RÃ¸d blomst',
     category: 'plants',
     tex: allFaces('flowerRed'),
     sound: S.GRASS, transparent: true, solid: false, luminance: 0 },
@@ -517,7 +544,7 @@ export const BLOCKS = [
     sound: S.GRASS, transparent: true, solid: false, luminance: 0 },
 
   { id: 32, key: 'flower_blue',
-    nameEn: 'Blue Flower',    nameNo: 'Blå blomst',
+    nameEn: 'Blue Flower',    nameNo: 'BlÃ¥ blomst',
     category: 'plants',
     tex: allFaces('flowerBlue'),
     sound: S.GRASS, transparent: true, solid: false, luminance: 0 },
@@ -541,13 +568,13 @@ export const BLOCKS = [
     sound: S.GRASS, transparent: true, solid: false, luminance: 0 },
 
   { id: 36, key: 'tall_grass',
-    nameEn: 'Tall Grass',     nameNo: 'Høyt gress',
+    nameEn: 'Tall Grass',     nameNo: 'HÃ¸yt gress',
     category: 'plants',
     tex: allFaces('tallGrass'),
     sound: S.GRASS, transparent: true, solid: false, luminance: 0 },
 
   { id: 37, key: 'mushroom_red',
-    nameEn: 'Red Mushroom',   nameNo: 'Rød sopp',
+    nameEn: 'Red Mushroom',   nameNo: 'RÃ¸d sopp',
     category: 'plants',
     tex: allFaces('mushroomRed'),
     sound: S.SOFT, transparent: true, solid: false, luminance: 0 },
@@ -594,22 +621,22 @@ export const BLOCKS = [
     tex: allFaces('mushroomStem'),
     sound: S.SOFT, transparent: false, solid: true, luminance: 0 },
 
-  // Flowing water — placed by WaterSystem, never in inventory
+  // Flowing water â€” placed by WaterSystem, never in inventory
   { id: 45, key: 'waterFlow',
     nameEn: 'Flowing Water',  nameNo: 'Rennende vann',
     category: null,
     tex: allFaces('waterFlow'),
     sound: S.LIQUID, transparent: true, liquid: true, solid: false, luminance: 0 },
 
-  // ══════════════════════════════════════════════════════════
-  //  COLOUR BLOCKS (16 × wool, concrete, stained glass,
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  //  COLOUR BLOCKS (16 Ã— wool, concrete, stained glass,
   //  terracotta = generated programmatically below)
-  // ══════════════════════════════════════════════════════════
-  // IDs 50–113 are reserved for colour blocks (see generateColorBlocks)
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  // IDs 50â€“113 are reserved for colour blocks (see generateColorBlocks)
 
-  // ══════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   //  STONE & BRICK  (start at 120)
-  // ══════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   { id: 120, key: 'cobblestone',
     nameEn: 'Cobblestone',    nameNo: 'Brostein',
     category: 'stone',
@@ -677,7 +704,7 @@ export const BLOCKS = [
     sound: S.STONE, transparent: false, solid: true, luminance: 0 },
 
   { id: 131, key: 'nether_brick',
-    nameEn: 'Nether Brick',   nameNo: 'Mørkemurstein',
+    nameEn: 'Nether Brick',   nameNo: 'MÃ¸rkemurstein',
     category: 'stone',
     tex: allFaces('netherBrick'),
     sound: S.STONE, transparent: false, solid: true, luminance: 0 },
@@ -730,11 +757,11 @@ export const BLOCKS = [
     tex: allFaces('oxidizedCopper'),
     sound: S.STONE, transparent: false, solid: true, luminance: 0 },
 
-  // ══════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   //  FANTASY  (start at 140)
-  // ══════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   { id: 140, key: 'crystal_blue',
-    nameEn: 'Blue Crystal',   nameNo: 'Blå krystall',
+    nameEn: 'Blue Crystal',   nameNo: 'BlÃ¥ krystall',
     category: 'fantasy',
     tex: allFaces('crystalBlue'),
     sound: S.STONE, transparent: true, solid: true, luminance: 10, lightColor: '#40C8FF' },
@@ -746,13 +773,13 @@ export const BLOCKS = [
     sound: S.STONE, transparent: true, solid: true, luminance: 10, lightColor: '#C840FF' },
 
   { id: 142, key: 'crystal_green',
-    nameEn: 'Green Crystal',  nameNo: 'Grønn krystall',
+    nameEn: 'Green Crystal',  nameNo: 'GrÃ¸nn krystall',
     category: 'fantasy',
     tex: allFaces('crystalGreen'),
     sound: S.STONE, transparent: true, solid: true, luminance: 10, lightColor: '#40FFB0' },
 
   { id: 143, key: 'crystal_red',
-    nameEn: 'Red Crystal',    nameNo: 'Rød krystall',
+    nameEn: 'Red Crystal',    nameNo: 'RÃ¸d krystall',
     category: 'fantasy',
     tex: allFaces('crystalRed'),
     sound: S.STONE, transparent: true, solid: true, luminance: 10, lightColor: '#FF4060' },
@@ -805,9 +832,9 @@ export const BLOCKS = [
     tex: allFaces('glowstone'),
     sound: S.STONE, transparent: false, solid: true, luminance: 15, lightColor: '#FFD870' },
 
-  // ══════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   //  FURNITURE / MISC  (start at 160)
-  // ══════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   { id: 160, key: 'bookshelf',
     nameEn: 'Bookshelf',      nameNo: 'Bokhylle',
     category: 'furniture', sub: 'living',
@@ -815,13 +842,13 @@ export const BLOCKS = [
     sound: S.WOOD, transparent: false, solid: true, luminance: 0 },
 
   { id: 161, key: 'hay_bale',
-    nameEn: 'Hay Bale',       nameNo: 'Høyballe',
+    nameEn: 'Hay Bale',       nameNo: 'HÃ¸yballe',
     category: 'furniture', sub: 'garden',
     tex: topAndSide('hayBaleTop','hayBaleSide'),
     sound: S.GRASS, transparent: false, solid: true, luminance: 0 },
 
   { id: 162, key: 'barrel',
-    nameEn: 'Barrel',         nameNo: 'Tønne',
+    nameEn: 'Barrel',         nameNo: 'TÃ¸nne',
     category: 'furniture', sub: 'storage',
     tex: topAndSide('barrelTop','barrelSide'),
     sound: S.WOOD, transparent: false, solid: true, luminance: 0 },
@@ -833,7 +860,7 @@ export const BLOCKS = [
     sound: S.STONE, transparent: true, solid: false, luminance: 14, lightColor: '#FFC060' },
 
   { id: 164, key: 'campfire',
-    nameEn: 'Campfire',       nameNo: 'Bål',
+    nameEn: 'Campfire',       nameNo: 'BÃ¥l',
     category: 'furniture', sub: 'garden',
     tex: topSideBottom('campfireTop','campfireSide','oakPlanks'),
     sound: S.WOOD, transparent: true, solid: true, luminance: 12, lightColor: '#FF8030',
@@ -869,9 +896,9 @@ export const BLOCKS = [
     tex: topSideBottom('tntTop','tntSide','tntTop'),
     sound: S.WOOD, transparent: false, solid: true, luminance: 0 },
 
-  // ══════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   //  SPECIAL / GLASS  (start at 175)
-  // ══════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   { id: 175, key: 'glass',
     nameEn: 'Glass',          nameNo: 'Glass',
     category: 'special',
@@ -932,9 +959,9 @@ export const BLOCKS = [
     tex: allFaces('honeycombBlock'),
     sound: S.SOFT, transparent: false, solid: true, luminance: 2, lightColor: '#E8B830' },
 
-  // ══════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   //  SEASONAL  (start at 185)
-  // ══════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   { id: 185, key: 'christmas_gift',
     nameEn: 'Gift Box',       nameNo: 'Gaveeske',
     category: 'seasonal',
@@ -948,28 +975,28 @@ export const BLOCKS = [
     sound: S.SOFT, transparent: false, solid: true, luminance: 4, lightColor: '#FF4040' },
 
   { id: 187, key: 'easter_egg_block',
-    nameEn: 'Easter Egg',     nameNo: 'Påskeegg',
+    nameEn: 'Easter Egg',     nameNo: 'PÃ¥skeegg',
     category: 'seasonal',
     tex: allFaces('easterEgg'),
     sound: S.SOFT, transparent: false, solid: true, luminance: 0 },
 
   { id: 188, key: 'snowman_head',
-    nameEn: 'Snowman Head',   nameNo: 'Snømannhode',
+    nameEn: 'Snowman Head',   nameNo: 'SnÃ¸mannhode',
     category: 'seasonal',
     tex: allFaces('snowmanHead'),
     sound: S.SNOW, transparent: false, solid: true, luminance: 0 },
 
-  // ── BIOME IDENTITY BLOCKS ────────────────────────────────────
-  // B1 — Autumn
+  // â”€â”€ BIOME IDENTITY BLOCKS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // B1 â€” Autumn
   { id: 189, key: 'leaf_pile',
-    nameEn: 'Leaf Pile',      nameNo: 'Løvhaug',
+    nameEn: 'Leaf Pile',      nameNo: 'LÃ¸vhaug',
     category: 'seasonal',
     tex: allFaces('leafPile'),
     sound: S.LEAVES, transparent: false, solid: true, luminance: 0 },
 
-  // B2 — Desert
+  // B2 â€” Desert
   { id: 190, key: 'dead_bush',
-    nameEn: 'Dead Bush',      nameNo: 'Tørr busk',
+    nameEn: 'Dead Bush',      nameNo: 'TÃ¸rr busk',
     category: 'plants',
     tex: allFaces('deadBush'),
     sound: S.GRASS, transparent: true, solid: false, luminance: 0 },
@@ -986,14 +1013,14 @@ export const BLOCKS = [
     tex: allFaces('crackedSandstone'),
     sound: S.STONE, transparent: false, solid: true, luminance: 0 },
 
-  // ── B3: SNOWY PEAKS ──────────────────────────────────────────
+  // â”€â”€ B3: SNOWY PEAKS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   { id: 193, key: 'powder_snow',
-    nameEn: 'Powder Snow',       nameNo: 'Løssnø',
+    nameEn: 'Powder Snow',       nameNo: 'LÃ¸ssnÃ¸',
     category: 'nature',
     tex: allFaces('powderSnow'),
     sound: S.SNOW, transparent: false, solid: true, luminance: 0 },
 
-  // ── B4: MUSHROOM ─────────────────────────────────────────────
+  // â”€â”€ B4: MUSHROOM â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   { id: 194, key: 'mycelium',
     nameEn: 'Mycelium',          nameNo: 'Mycelium',
     category: 'nature',
@@ -1006,15 +1033,15 @@ export const BLOCKS = [
     tex: allFaces('glowingMushroom'),
     sound: S.SOFT, transparent: true, solid: false, luminance: 10, lightColor: '#80FFB0' },
 
-  // ── B5 — CANDY ───────────────────────────────────────────────
+  // â”€â”€ B5 â€” CANDY â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   { id: 196, key: 'candy_red',
-    nameEn: 'Red Candy Block',   nameNo: 'Rød godteriblokk',
+    nameEn: 'Red Candy Block',   nameNo: 'RÃ¸d godteriblokk',
     category: 'fantasy',
     tex: allFaces('candyRed'),
     sound: S.SOFT, transparent: false, solid: true, luminance: 0 },
 
   { id: 197, key: 'candy_mint',
-    nameEn: 'Mint Candy Block',  nameNo: 'Mintgrønn godteriblokk',
+    nameEn: 'Mint Candy Block',  nameNo: 'MintgrÃ¸nn godteriblokk',
     category: 'fantasy',
     tex: allFaces('candyMint'),
     sound: S.SOFT, transparent: false, solid: true, luminance: 0 },
@@ -1025,14 +1052,14 @@ export const BLOCKS = [
     tex: topAndSide('frostedLogTop', 'frostedLogSide'),
     sound: S.WOOD, transparent: false, solid: true, luminance: 0 },
 
-  // ── JUNGLE (B6) ──────────────────────────────────────────────
+  // â”€â”€ JUNGLE (B6) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   { id: 199, key: 'tropical_flower',
     nameEn: 'Tropical Flower',   nameNo: 'Tropisk blomst',
     category: 'plants',
     tex: allFaces('tropicalFlower'),
     sound: S.GRASS, transparent: true, solid: false, luminance: 0 },
 
-  // ── FAIRY WOODLAND (B7) ──────────────────────────────────────
+  // â”€â”€ FAIRY WOODLAND (B7) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   { id: 200, key: 'willow_log',
     nameEn: 'Willow Log',        nameNo: 'Pilestokk',
     category: 'wood',
@@ -1075,7 +1102,7 @@ export const BLOCKS = [
     tex: allFaces('wispLight'),
     sound: S.GLASS, transparent: true, solid: false, luminance: 15, lightColor: '#C0E8FF' },
 
-  // B8 — Meadow
+  // B8 â€” Meadow
   { id: 207, key: 'mossy_stone',
     nameEn: 'Mossy Stone',       nameNo: 'Mosestein',
     category: 'nature',
@@ -1088,7 +1115,7 @@ export const BLOCKS = [
     tex: allFaces('wildflowerPatch'),
     sound: S.GRASS, transparent: true, solid: false, luminance: 0 },
 
-  // B9 — Cherry
+  // B9 â€” Cherry
   { id: 209, key: 'petal_carpet',
     nameEn: 'Petal Carpet',      nameNo: 'Blomstertepper',
     category: 'plants',
@@ -1101,7 +1128,7 @@ export const BLOCKS = [
     tex: allFaces('stoneLantern'),
     sound: S.STONE, transparent: false, solid: true, luminance: 6, lightColor: '#FFD060' },
 
-  // ── Non-cube geometry blocks ──────────────────────────────
+  // â”€â”€ Non-cube geometry blocks â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   { id: 211, key: 'fence',
     nameEn: 'Fence',             nameNo: 'Gjerde',
     category: 'furniture', sub: 'garden',
@@ -1124,18 +1151,18 @@ export const BLOCKS = [
     sound: S.WOOD, transparent: true, solid: false },
 
   { id: 214, key: 'door',
-    nameEn: 'Door',              nameNo: 'Dør',
+    nameEn: 'Door',              nameNo: 'DÃ¸r',
     category: 'furniture', sub: 'garden',
     tex: topSideBottom('doorTop', 'doorSide', 'doorTop'),
     shape: 'panel',
     sound: S.WOOD, transparent: true, solid: false,
     multiBlock: { dx: 0, dy: 1, dz: 0, partId: 237 } },
 
-  // ══════════════════════════════════════════════════════════
-  //  FURNITURE — Phase 18  (custom shapes + directional facing)
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  //  FURNITURE â€” Phase 18  (custom shapes + directional facing)
   //  facing: 0=S (+Z front), 1=W (-X front), 2=N (-Z front), 3=E (+X front)
-  //  dirGroup: [S, W, N, E] IDs — used by placement to pick the right variant
-  // ══════════════════════════════════════════════════════════
+  //  dirGroup: [S, W, N, E] IDs â€” used by placement to pick the right variant
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   { id: 215, key: 'chair',
     nameEn: 'Chair',             nameNo: 'Stol',
     category: 'furniture', sub: 'living',
@@ -1180,7 +1207,7 @@ export const BLOCKS = [
     sound: S.WOOD, transparent: true, solid: true, luminance: 0,
     shape: 'cabinet_furn', facing: 0, dirGroup: [220, 230, 231, 232] },
 
-  // ── Directional variants (hidden: never shown in inventory) ──
+  // â”€â”€ Directional variants (hidden: never shown in inventory) â”€â”€
 
   // Chair W / N / E
   { id: 221, key: 'chair_w', nameEn: 'Chair', nameNo: 'Stol',
@@ -1256,9 +1283,9 @@ export const BLOCKS = [
     sound: S.WOOD, transparent: true, solid: true, luminance: 0,
     shape: 'cabinet_furn', facing: 3 },
 
-  // ── Multi-block secondary blocks (hidden, placed automatically) ──
+  // â”€â”€ Multi-block secondary blocks (hidden, placed automatically) â”€â”€
 
-  // Bed foot — matching facing with head block
+  // Bed foot â€” matching facing with head block
   { id: 233, key: 'bed_foot',
     nameEn: 'Bed', nameNo: 'Seng',
     category: 'furniture', hidden: true,
@@ -1284,17 +1311,17 @@ export const BLOCKS = [
     sound: S.SOFT, transparent: true, solid: true, luminance: 0,
     shape: 'bed_foot', facing: 3, isPart: true, partnerDelta: [-1, 0, 0] },
 
-  // Door top — placed automatically above door
+  // Door top â€” placed automatically above door
   { id: 237, key: 'door_top',
-    nameEn: 'Door', nameNo: 'Dør',
+    nameEn: 'Door', nameNo: 'DÃ¸r',
     category: 'furniture', hidden: true,
     tex: topSideBottom('doorTop', 'doorSide', 'doorTop'),
     sound: S.WOOD, transparent: true, solid: false,
     shape: 'panel', isPart: true, partnerDelta: [0, -1, 0] },
 
-  // ══════════════════════════════════════════════════════════
-  //  B10 — BLODMARK (Vampire Biome)
-  // ══════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  //  B10 â€” BLODMARK (Vampire Biome)
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
   { id: 238, key: 'blood_water',
     nameEn: 'Blood Water',       nameNo: 'Blodbad',
@@ -1302,7 +1329,7 @@ export const BLOCKS = [
     tex: allFaces('bloodWater'),
     sound: S.LIQUID, transparent: true, liquid: true, solid: false, luminance: 0 },
 
-  // Flowing blood — placed by BloodWaterSystem, never in inventory
+  // Flowing blood â€” placed by BloodWaterSystem, never in inventory
   { id: 239, key: 'blood_water_flow',
     nameEn: 'Blood Water',       nameNo: 'Blodbad',
     category: null,
@@ -1316,7 +1343,7 @@ export const BLOCKS = [
     sound: S.GRASS, transparent: false, solid: true, luminance: 0 },
 
   { id: 241, key: 'dark_stone',
-    nameEn: 'Dark Stone',        nameNo: 'Mørk stein',
+    nameEn: 'Dark Stone',        nameNo: 'MÃ¸rk stein',
     category: 'stone',
     tex: allFaces('vDarkStone'),
     sound: S.STONE, transparent: false, solid: true, luminance: 0 },
@@ -1334,7 +1361,7 @@ export const BLOCKS = [
     sound: S.LEAVES, transparent: true, solid: true, luminance: 0, waving: true },
 
   { id: 244, key: 'dark_thorns',
-    nameEn: 'Dark Thorns',       nameNo: 'Mørke torner',
+    nameEn: 'Dark Thorns',       nameNo: 'MÃ¸rke torner',
     category: 'plants',
     tex: allFaces('darkThorns'),
     sound: S.LEAVES, transparent: true, solid: false, luminance: 0 },
@@ -1345,7 +1372,7 @@ export const BLOCKS = [
     tex: allFaces('bloodCrystal'),
     sound: S.GLASS, transparent: true, solid: false, luminance: 8, lightColor: '#CC0030' },
 
-  // Vampire Throne — directional furniture (chair shape)
+  // Vampire Throne â€” directional furniture (chair shape)
   { id: 246, key: 'vampire_throne',
     nameEn: 'Vampire Throne',    nameNo: 'Vampyrthron',
     category: 'furniture', sub: 'living',
@@ -1371,11 +1398,11 @@ export const BLOCKS = [
     sound: S.WOOD, transparent: true, solid: true, luminance: 4, lightColor: '#8B0000',
     shape: 'chair', facing: 3, interactable: 'sit' },
 
-  // ══════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   //  KITCHEN FURNITURE  (start at 250)
-  // ══════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   { id: 250, key: 'kitchen_counter',
-    nameEn: 'Kitchen Counter', nameNo: 'Kjøkkenbenk',
+    nameEn: 'Kitchen Counter', nameNo: 'KjÃ¸kkenbenk',
     category: 'furniture', sub: 'kitchen',
     tex: topSideBottom('counterTop', 'counterSide', 'counterSide'),
     shape: 'slab',
@@ -1404,34 +1431,34 @@ export const BLOCKS = [
     sound: S.STONE, transparent: true, solid: true, luminance: 0, interactable: 'stove' },
 
   { id: 255, key: 'fridge',
-    nameEn: 'Fridge',          nameNo: 'Kjøleskap',
+    nameEn: 'Fridge',          nameNo: 'KjÃ¸leskap',
     category: 'furniture', sub: 'kitchen',
     tex: { top: 'fridgeSide', side: 'fridgeSide', front: 'fridgeFront', bottom: 'fridgeSide' },
     shape: 'cabinet_furn', facing: 0, dirGroup: [255, 256, 257, 258],
     sound: S.STONE, transparent: true, solid: true, luminance: 0,
     interactable: 'fridge', multiBlock: { dx: 0, dy: 1, dz: 0, partId: 271 } },
-  { id: 256, key: 'fridge_w', nameEn: 'Fridge', nameNo: 'Kjøleskap',
+  { id: 256, key: 'fridge_w', nameEn: 'Fridge', nameNo: 'KjÃ¸leskap',
     category: 'furniture', hidden: true,
     tex: { top: 'fridgeSide', side: 'fridgeSide', front: 'fridgeFront', bottom: 'fridgeSide' },
     shape: 'cabinet_furn', facing: 1,
     sound: S.STONE, transparent: true, solid: true, luminance: 0,
     interactable: 'fridge', multiBlock: { dx: 0, dy: 1, dz: 0, partId: 272 } },
-  { id: 257, key: 'fridge_n', nameEn: 'Fridge', nameNo: 'Kjøleskap',
+  { id: 257, key: 'fridge_n', nameEn: 'Fridge', nameNo: 'KjÃ¸leskap',
     category: 'furniture', hidden: true,
     tex: { top: 'fridgeSide', side: 'fridgeSide', front: 'fridgeFront', bottom: 'fridgeSide' },
     shape: 'cabinet_furn', facing: 2,
     sound: S.STONE, transparent: true, solid: true, luminance: 0,
     interactable: 'fridge', multiBlock: { dx: 0, dy: 1, dz: 0, partId: 273 } },
-  { id: 258, key: 'fridge_e', nameEn: 'Fridge', nameNo: 'Kjøleskap',
+  { id: 258, key: 'fridge_e', nameEn: 'Fridge', nameNo: 'KjÃ¸leskap',
     category: 'furniture', hidden: true,
     tex: { top: 'fridgeSide', side: 'fridgeSide', front: 'fridgeFront', bottom: 'fridgeSide' },
     shape: 'cabinet_furn', facing: 3,
     sound: S.STONE, transparent: true, solid: true, luminance: 0,
     interactable: 'fridge', multiBlock: { dx: 0, dy: 1, dz: 0, partId: 274 } },
 
-  // ══════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   //  BATHROOM FURNITURE  (start at 259)
-  // ══════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   { id: 259, key: 'toilet',
     nameEn: 'Toilet',          nameNo: 'Toalett',
     category: 'furniture', sub: 'bathroom',
@@ -1469,7 +1496,7 @@ export const BLOCKS = [
     interactable: 'bathtub',
     sound: S.STONE, transparent: true, solid: true, luminance: 0 },
 
-  // ── Dresser (bedroom addition) ────────────────────────────
+  // â”€â”€ Dresser (bedroom addition) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   { id: 264, key: 'dresser',
     nameEn: 'Dresser',         nameNo: 'Kommode',
     category: 'furniture', sub: 'bedroom',
@@ -1492,7 +1519,7 @@ export const BLOCKS = [
     shape: 'cabinet_furn', facing: 3,
     sound: S.WOOD, transparent: true, solid: true, luminance: 0 },
 
-  // ── Toilet directional variants (hidden) ─────────────────
+  // â”€â”€ Toilet directional variants (hidden) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   { id: 268, key: 'toilet_w', nameEn: 'Toilet', nameNo: 'Toalett',
     category: 'furniture', hidden: true,
     tex: topSideBottom('toiletTop', 'toiletSide', 'toiletSide'),
@@ -1509,33 +1536,33 @@ export const BLOCKS = [
     shape: 'toilet', facing: 3,
     sound: S.STONE, transparent: true, solid: true, luminance: 0 },
 
-  // ── Fridge top (hidden, placed automatically above fridge) ─
-  { id: 271, key: 'fridge_top', nameEn: 'Fridge', nameNo: 'Kjøleskap',
+  // â”€â”€ Fridge top (hidden, placed automatically above fridge) â”€
+  { id: 271, key: 'fridge_top', nameEn: 'Fridge', nameNo: 'KjÃ¸leskap',
     category: 'furniture', hidden: true,
     tex: { top: 'fridgeTopTop', side: 'fridgeTopSide', front: 'fridgeTopFront', bottom: 'fridgeSide' },
     shape: 'cabinet_furn', facing: 0,
     sound: S.STONE, transparent: true, solid: true, luminance: 0,
     interactable: 'fridge', isPart: true, partnerDelta: [0, -1, 0] },
-  { id: 272, key: 'fridge_top_w', nameEn: 'Fridge', nameNo: 'Kjøleskap',
+  { id: 272, key: 'fridge_top_w', nameEn: 'Fridge', nameNo: 'KjÃ¸leskap',
     category: 'furniture', hidden: true,
     tex: { top: 'fridgeTopTop', side: 'fridgeTopSide', front: 'fridgeTopFront', bottom: 'fridgeSide' },
     shape: 'cabinet_furn', facing: 1,
     sound: S.STONE, transparent: true, solid: true, luminance: 0,
     interactable: 'fridge', isPart: true, partnerDelta: [0, -1, 0] },
-  { id: 273, key: 'fridge_top_n', nameEn: 'Fridge', nameNo: 'Kjøleskap',
+  { id: 273, key: 'fridge_top_n', nameEn: 'Fridge', nameNo: 'KjÃ¸leskap',
     category: 'furniture', hidden: true,
     tex: { top: 'fridgeTopTop', side: 'fridgeTopSide', front: 'fridgeTopFront', bottom: 'fridgeSide' },
     shape: 'cabinet_furn', facing: 2,
     sound: S.STONE, transparent: true, solid: true, luminance: 0,
     interactable: 'fridge', isPart: true, partnerDelta: [0, -1, 0] },
-  { id: 274, key: 'fridge_top_e', nameEn: 'Fridge', nameNo: 'Kjøleskap',
+  { id: 274, key: 'fridge_top_e', nameEn: 'Fridge', nameNo: 'KjÃ¸leskap',
     category: 'furniture', hidden: true,
     tex: { top: 'fridgeTopTop', side: 'fridgeTopSide', front: 'fridgeTopFront', bottom: 'fridgeSide' },
     shape: 'cabinet_furn', facing: 3,
     sound: S.STONE, transparent: true, solid: true, luminance: 0,
     interactable: 'fridge', isPart: true, partnerDelta: [0, -1, 0] },
 
-  // ── Sofa right companion (hidden, placed automatically) ───
+  // â”€â”€ Sofa right companion (hidden, placed automatically) â”€â”€â”€
   { id: 275, key: 'sofa_r', nameEn: 'Sofa', nameNo: 'Sofa',
     category: 'furniture', hidden: true,
     tex: topSideBottom('sofaTop', 'sofaSide', 'sofaBottom'),
@@ -1561,67 +1588,67 @@ export const BLOCKS = [
     shape: 'sofa_r', facing: 3, interactable: 'sit',
     isPart: true, partnerDelta: [0, 0, 1] },
 
-  // ══════════════════════════════════════════════════════════
-  //  FOOD ITEMS (IDs 279–287)
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  //  FOOD ITEMS (IDs 279â€“287)
   //  cross shape = small sprite, placeable as decoration
-  //  isFood: true — can be eaten by pressing R
-  // ══════════════════════════════════════════════════════════
+  //  isFood: true â€” can be eaten by pressing R
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   { id: 279, key: 'food_apple',
     nameEn: 'Apple',           nameNo: 'Eple',
     category: 'food',
-    tex: allFaces('foodApple'), shape: 'cross',
+    tex: allFaces('foodApple'),
     sound: S.SOFT, transparent: true, solid: false, luminance: 0,
     isFood: true, foodValue: 2 },
   { id: 280, key: 'food_bread',
-    nameEn: 'Bread',           nameNo: 'Brød',
+    nameEn: 'Bread',           nameNo: 'BrÃ¸d',
     category: 'food',
-    tex: allFaces('foodBread'), shape: 'cross',
+    tex: allFaces('foodBread'),
     sound: S.SOFT, transparent: true, solid: false, luminance: 0,
     isFood: true, foodValue: 3 },
   { id: 281, key: 'food_carrot',
     nameEn: 'Carrot',          nameNo: 'Gulrot',
     category: 'food',
-    tex: allFaces('foodCarrot'), shape: 'cross',
+    tex: allFaces('foodCarrot'),
     sound: S.SOFT, transparent: true, solid: false, luminance: 0,
     isFood: true, foodValue: 2 },
   { id: 282, key: 'food_cookie',
     nameEn: 'Cookie',          nameNo: 'Kjeks',
     category: 'food',
-    tex: allFaces('foodCookie'), shape: 'cross',
+    tex: allFaces('foodCookie'),
     sound: S.SOFT, transparent: true, solid: false, luminance: 0,
     isFood: true, foodValue: 1 },
   { id: 283, key: 'food_mushroom',
     nameEn: 'Mushroom Soup',   nameNo: 'Soppesuppe',
     category: 'food',
-    tex: allFaces('foodMushF'), shape: 'cross',
+    tex: allFaces('foodMushF'),
     sound: S.SOFT, transparent: true, solid: false, luminance: 0,
     isFood: true, foodValue: 3 },
   { id: 284, key: 'food_beef_raw',
-    nameEn: 'Raw Beef',        nameNo: 'Rått kjøtt',
+    nameEn: 'Raw Beef',        nameNo: 'RÃ¥tt kjÃ¸tt',
     category: 'food',
-    tex: allFaces('foodMeat'), shape: 'cross',
+    tex: allFaces('foodMeat'),
     sound: S.SOFT, transparent: true, solid: false, luminance: 0,
     isFood: true, foodValue: 0, rawFood: true, cookedId: 285 },
   { id: 285, key: 'food_beef_cooked',
-    nameEn: 'Cooked Beef',     nameNo: 'Stekt kjøtt',
+    nameEn: 'Cooked Beef',     nameNo: 'Stekt kjÃ¸tt',
     category: 'food',
-    tex: allFaces('foodCooked'), shape: 'cross',
+    tex: allFaces('foodCooked'),
     sound: S.SOFT, transparent: true, solid: false, luminance: 0,
     isFood: true, foodValue: 4 },
   { id: 286, key: 'food_fish_raw',
-    nameEn: 'Raw Fish',        nameNo: 'Rå fisk',
+    nameEn: 'Raw Fish',        nameNo: 'RÃ¥ fisk',
     category: 'food',
-    tex: allFaces('foodFish'), shape: 'cross',
+    tex: allFaces('foodFish'),
     sound: S.SOFT, transparent: true, solid: false, luminance: 0,
     isFood: true, foodValue: 0, rawFood: true, cookedId: 287 },
   { id: 287, key: 'food_fish_cooked',
     nameEn: 'Cooked Fish',     nameNo: 'Stekt fisk',
     category: 'food',
-    tex: allFaces('foodFishC'), shape: 'cross',
+    tex: allFaces('foodFishC'),
     sound: S.SOFT, transparent: true, solid: false, luminance: 0,
     isFood: true, foodValue: 3 },
 
-  // ── Bathtub companion blocks (invisible, solid) ───────────────
+  // â”€â”€ Bathtub companion blocks (invisible, solid) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   { id: 288, key: 'tub_part_xn',
     nameEn: 'Bathtub Part', nameNo: 'Badekar Del',
     category: 'furniture', hidden: true,
@@ -1644,11 +1671,11 @@ export const BLOCKS = [
     interactable: 'bathtub',
     sound: S.STONE, transparent: false, solid: true, luminance: 0 },
 
-  // ══════════════════════════════════════════════════════════
-  //  COOKING STATIONS (IDs 291–293)
-  // ══════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  //  COOKING STATIONS (IDs 291â€“293)
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   { id: 291, key: 'chopping_board',
-    nameEn: 'Chopping Board',  nameNo: 'Skjærebrett',
+    nameEn: 'Chopping Board',  nameNo: 'SkjÃ¦rebrett',
     category: 'furniture', sub: 'kitchen',
     tex: { top: 'chopBoardTop', side: 'chopBoardSide', bottom: 'chopBoardSide' },
     shape: 'slab',
@@ -1666,170 +1693,170 @@ export const BLOCKS = [
     category: 'furniture', sub: 'kitchen',
     tex: { top: 'bookTop', side: 'bookSide', bottom: 'bookSide' },
     shape: 'slab',
-    sound: S.SOFT, transparent: true, solid: false, luminance: 0, interactable: 'recipebook' },
+    sound: S.SOFT, transparent: true, solid: true, luminance: 0, interactable: 'recipebook' },
 
-  // ══════════════════════════════════════════════════════════
-  //  KITCHEN UTENSILS (IDs 294–298)
-  //  cross-sprite items — reusable, not consumed
-  // ══════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  //  KITCHEN UTENSILS (IDs 294â€“298)
+  //  cross-sprite items â€” reusable, not consumed
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   { id: 294, key: 'tool_knife',
     nameEn: 'Knife',     nameNo: 'Kniv',
     category: 'food', sub: 'utensils',
-    tex: allFaces('toolKnife'), shape: 'cross',
+    tex: allFaces('toolKnife'),
     sound: S.STONE, transparent: true, solid: false, luminance: 0, isUtensil: true },
 
   { id: 295, key: 'tool_whisk',
     nameEn: 'Whisk',     nameNo: 'Visp',
     category: 'food', sub: 'utensils',
-    tex: allFaces('toolWhisk'), shape: 'cross',
+    tex: allFaces('toolWhisk'),
     sound: S.STONE, transparent: true, solid: false, luminance: 0, isUtensil: true },
 
   { id: 296, key: 'tool_spatula',
     nameEn: 'Spatula',   nameNo: 'Stekespade',
     category: 'food', sub: 'utensils',
-    tex: allFaces('toolSpatula'), shape: 'cross',
+    tex: allFaces('toolSpatula'),
     sound: S.STONE, transparent: true, solid: false, luminance: 0, isUtensil: true },
 
   { id: 297, key: 'tool_pot',
     nameEn: 'Pot',       nameNo: 'Gryte',
     category: 'food', sub: 'utensils',
-    tex: allFaces('toolPot'), shape: 'cross',
+    tex: allFaces('toolPot'),
     sound: S.STONE, transparent: true, solid: false, luminance: 0, isUtensil: true },
 
   { id: 298, key: 'tool_pan',
     nameEn: 'Frying Pan', nameNo: 'Stekepanne',
     category: 'food', sub: 'utensils',
-    tex: allFaces('toolPan'), shape: 'cross',
+    tex: allFaces('toolPan'),
     sound: S.STONE, transparent: true, solid: false, luminance: 0, isUtensil: true },
 
-  // ══════════════════════════════════════════════════════════
-  //  RAW INGREDIENTS (IDs 299–305)
-  // ══════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  //  RAW INGREDIENTS (IDs 299â€“305)
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   { id: 299, key: 'food_egg',
     nameEn: 'Egg',       nameNo: 'Egg',
     category: 'food', sub: 'ingredients',
-    tex: allFaces('ingEgg'), shape: 'cross',
+    tex: allFaces('ingEgg'),
     sound: S.SOFT, transparent: true, solid: false, luminance: 0 },
 
   { id: 300, key: 'food_flour',
     nameEn: 'Flour',     nameNo: 'Mel',
     category: 'food', sub: 'ingredients',
-    tex: allFaces('ingFlour'), shape: 'cross',
+    tex: allFaces('ingFlour'),
     sound: S.SOFT, transparent: true, solid: false, luminance: 0 },
 
   { id: 301, key: 'food_potato',
     nameEn: 'Potato',    nameNo: 'Potet',
     category: 'food', sub: 'ingredients',
-    tex: allFaces('ingPotato'), shape: 'cross',
+    tex: allFaces('ingPotato'),
     sound: S.SOFT, transparent: true, solid: false, luminance: 0 },
 
   { id: 302, key: 'food_tomato',
     nameEn: 'Tomato',    nameNo: 'Tomat',
     category: 'food', sub: 'ingredients',
-    tex: allFaces('ingTomato'), shape: 'cross',
+    tex: allFaces('ingTomato'),
     sound: S.SOFT, transparent: true, solid: false, luminance: 0 },
 
   { id: 303, key: 'food_onion',
-    nameEn: 'Onion',     nameNo: 'Løk',
+    nameEn: 'Onion',     nameNo: 'LÃ¸k',
     category: 'food', sub: 'ingredients',
-    tex: allFaces('ingOnion'), shape: 'cross',
+    tex: allFaces('ingOnion'),
     sound: S.SOFT, transparent: true, solid: false, luminance: 0 },
 
   { id: 304, key: 'food_cheese',
     nameEn: 'Cheese',    nameNo: 'Ost',
     category: 'food', sub: 'ingredients',
-    tex: allFaces('ingCheese'), shape: 'cross',
+    tex: allFaces('ingCheese'),
     sound: S.SOFT, transparent: true, solid: false, luminance: 0 },
 
   { id: 305, key: 'food_milk',
     nameEn: 'Milk',      nameNo: 'Melk',
     category: 'food', sub: 'ingredients',
-    tex: allFaces('ingMilk'), shape: 'cross',
+    tex: allFaces('ingMilk'),
     sound: S.SOFT, transparent: true, solid: false, luminance: 0 },
 
-  // ══════════════════════════════════════════════════════════
-  //  PREPPED VARIANTS (IDs 306–310) — hidden, only from stations
-  // ══════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  //  PREPPED VARIANTS (IDs 306â€“310) â€” hidden, only from stations
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   { id: 306, key: 'food_potato_chopped',
     nameEn: 'Chopped Potato', nameNo: 'Hakket potet',
     category: 'food', hidden: true,
-    tex: allFaces('prepPotatoChopped'), shape: 'cross',
+    tex: allFaces('prepPotatoChopped'),
     sound: S.SOFT, transparent: true, solid: false, luminance: 0 },
 
   { id: 307, key: 'food_carrot_sliced',
     nameEn: 'Sliced Carrot',  nameNo: 'Skivet gulrot',
     category: 'food', hidden: true,
-    tex: allFaces('prepCarrotSliced'), shape: 'cross',
+    tex: allFaces('prepCarrotSliced'),
     sound: S.SOFT, transparent: true, solid: false, luminance: 0 },
 
   { id: 308, key: 'food_onion_diced',
-    nameEn: 'Diced Onion',    nameNo: 'Hakket løk',
+    nameEn: 'Diced Onion',    nameNo: 'Hakket lÃ¸k',
     category: 'food', hidden: true,
-    tex: allFaces('prepOnionDiced'), shape: 'cross',
+    tex: allFaces('prepOnionDiced'),
     sound: S.SOFT, transparent: true, solid: false, luminance: 0 },
 
   { id: 309, key: 'food_cheese_shredded',
     nameEn: 'Shredded Cheese', nameNo: 'Revet ost',
     category: 'food', hidden: true,
-    tex: allFaces('prepCheeseShredded'), shape: 'cross',
+    tex: allFaces('prepCheeseShredded'),
     sound: S.SOFT, transparent: true, solid: false, luminance: 0 },
 
   { id: 310, key: 'food_egg_cracked',
     nameEn: 'Cracked Egg',    nameNo: 'Knekt egg',
     category: 'food', hidden: true,
-    tex: allFaces('prepEggCracked'), shape: 'cross',
+    tex: allFaces('prepEggCracked'),
     sound: S.SOFT, transparent: true, solid: false, luminance: 0 },
 
-  // ══════════════════════════════════════════════════════════
-  //  COOKED DISHES (IDs 311–316)
-  // ══════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  //  COOKED DISHES (IDs 311â€“316)
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   { id: 311, key: 'food_pizza',
     nameEn: 'Pizza',     nameNo: 'Pizza',
     category: 'food', sub: 'dishes',
-    tex: allFaces('dishPizza'), shape: 'cross',
+    tex: allFaces('dishPizza'),
     sound: S.SOFT, transparent: true, solid: false, luminance: 0,
     isFood: true, foodValue: 5 },
 
   { id: 312, key: 'food_cake',
     nameEn: 'Cake',      nameNo: 'Kake',
     category: 'food', sub: 'dishes',
-    tex: allFaces('dishCake'), shape: 'cross',
+    tex: allFaces('dishCake'),
     sound: S.SOFT, transparent: true, solid: false, luminance: 0,
     isFood: true, foodValue: 4 },
 
   { id: 313, key: 'food_soup',
-    nameEn: 'Vegetable Soup', nameNo: 'Grønnsakssuppe',
+    nameEn: 'Vegetable Soup', nameNo: 'GrÃ¸nnsakssuppe',
     category: 'food', sub: 'dishes',
-    tex: allFaces('dishSoup'), shape: 'cross',
+    tex: allFaces('dishSoup'),
     sound: S.SOFT, transparent: true, solid: false, luminance: 0,
     isFood: true, foodValue: 4 },
 
   { id: 314, key: 'food_omelette',
     nameEn: 'Omelette',  nameNo: 'Omelett',
     category: 'food', sub: 'dishes',
-    tex: allFaces('dishOmelet'), shape: 'cross',
+    tex: allFaces('dishOmelet'),
     sound: S.SOFT, transparent: true, solid: false, luminance: 0,
     isFood: true, foodValue: 3 },
 
   { id: 315, key: 'food_fries',
     nameEn: 'Fries',     nameNo: 'Pommes frites',
     category: 'food', sub: 'dishes',
-    tex: allFaces('dishFries'), shape: 'cross',
+    tex: allFaces('dishFries'),
     sound: S.SOFT, transparent: true, solid: false, luminance: 0,
     isFood: true, foodValue: 3 },
 
   { id: 316, key: 'food_pancakes',
     nameEn: 'Pancakes',  nameNo: 'Pannekaker',
     category: 'food', sub: 'dishes',
-    tex: allFaces('dishPancakes'), shape: 'cross',
+    tex: allFaces('dishPancakes'),
     sound: S.SOFT, transparent: true, solid: false, luminance: 0,
     isFood: true, foodValue: 4 },
 
-  // ══════════════════════════════════════════════════════════
-  //  PHASE 20 — Signs (IDs 317–320)
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  //  PHASE 20 â€” Signs (IDs 317â€“320)
   //  Four facing variants; only sign_s shows in inventory.
-  //  dirGroup maps yaw→facing at placement time.
-  // ══════════════════════════════════════════════════════════
+  //  dirGroup maps yawâ†’facing at placement time.
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   { id: 317, key: 'sign_s', nameEn: 'Sign', nameNo: 'Skilt',
     category: 'decoration', shape: 'sign', facing: 0,
     tex: { top: 'oakLogSide', bottom: 'oakPlanks', side: 'oakPlanks', front: 'signFace' },
@@ -1848,20 +1875,20 @@ export const BLOCKS = [
     tex: { top: 'oakLogSide', bottom: 'oakPlanks', side: 'oakPlanks', front: 'signFace' },
     sound: S.WOOD, solid: true, transparent: true, interactable: 'sign', hidden: true },
 
-  // ══════════════════════════════════════════════════════════
-  //  PHASE 21 — Fireworks (IDs 321–325)
-  // ══════════════════════════════════════════════════════════
-  { id: 321, key: 'firework_red',     nameEn: 'Firework (Red)',     nameNo: 'Fyrverkeri (rød)',
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  //  PHASE 21 â€” Fireworks (IDs 321â€“325)
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  { id: 321, key: 'firework_red',     nameEn: 'Firework (Red)',     nameNo: 'Fyrverkeri (rÃ¸d)',
     category: 'decoration',
     tex: allFaces('fireworkRed'),    sound: S.WOOD,
     transparent: true, solid: false, luminance: 0,
     isFirework: true, burstColors: ['#FF2020', '#FF8020'], interactable: 'firework' },
-  { id: 322, key: 'firework_blue',    nameEn: 'Firework (Blue)',    nameNo: 'Fyrverkeri (blå)',
+  { id: 322, key: 'firework_blue',    nameEn: 'Firework (Blue)',    nameNo: 'Fyrverkeri (blÃ¥)',
     category: 'decoration',
     tex: allFaces('fireworkBlue'),   sound: S.WOOD,
     transparent: true, solid: false, luminance: 0,
     isFirework: true, burstColors: ['#2060FF', '#80C0FF'], interactable: 'firework' },
-  { id: 323, key: 'firework_green',   nameEn: 'Firework (Green)',   nameNo: 'Fyrverkeri (grønn)',
+  { id: 323, key: 'firework_green',   nameEn: 'Firework (Green)',   nameNo: 'Fyrverkeri (grÃ¸nn)',
     category: 'decoration',
     tex: allFaces('fireworkGreen'),  sound: S.WOOD,
     transparent: true, solid: false, luminance: 0,
@@ -1876,28 +1903,161 @@ export const BLOCKS = [
     tex: allFaces('fireworkRainbow'), sound: S.WOOD,
     transparent: true, solid: false, luminance: 0,
     isFirework: true, burstColors: 'rainbow', interactable: 'firework' },
+
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  //  PHASE 22 â€” FARMING (IDs 326â€“343)
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
+  // â”€â”€ Farmland (tilled dirt) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  { id: 326, key: 'farmland',
+    nameEn: 'Farmland',   nameNo: 'Dyrket mark',
+    category: 'farming',
+    tex: topSideBottom('farmlandTop', 'farmlandSide', 'farmlandSide'),
+    sound: S.DIRT, transparent: false, solid: true, luminance: 0,
+    isFarmland: true },
+
+  // â”€â”€ Wheat (harvestId â†’ flour, ID 300) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  { id: 327, key: 'crop_wheat_1',
+    nameEn: 'Wheat Seeds', nameNo: 'HvetefrÃ¸',
+    category: 'farming',
+    tex: allFaces('wheat1'),
+    sound: S.GRASS, transparent: true, solid: false, luminance: 0,
+    isCrop: true, cropStage: 1, cropType: 'wheat', nextStageId: 328, harvestId: 300 },
+  { id: 328, key: 'crop_wheat_2',
+    nameEn: 'Wheat',       nameNo: 'Hvete',
+    category: 'farming', hidden: true,
+    tex: allFaces('wheat2'),
+    sound: S.GRASS, transparent: true, solid: false, luminance: 0,
+    isCrop: true, cropStage: 2, cropType: 'wheat', nextStageId: 329, harvestId: 300 },
+  { id: 329, key: 'crop_wheat_3',
+    nameEn: 'Wheat (Ready)', nameNo: 'Hvete (Klar)',
+    category: 'farming', hidden: true,
+    tex: allFaces('wheat3'),
+    sound: S.GRASS, transparent: true, solid: false, luminance: 0,
+    isCrop: true, cropStage: 3, cropType: 'wheat', harvestId: 300 },
+
+  // â”€â”€ Carrot (harvestId â†’ food_carrot, ID 281) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  { id: 330, key: 'crop_carrot_1',
+    nameEn: 'Carrot Seeds', nameNo: 'GulrotfrÃ¸',
+    category: 'farming',
+    tex: allFaces('carrot1'),
+    sound: S.GRASS, transparent: true, solid: false, luminance: 0,
+    isCrop: true, cropStage: 1, cropType: 'carrot', nextStageId: 331, harvestId: 281 },
+  { id: 331, key: 'crop_carrot_2',
+    nameEn: 'Carrot',       nameNo: 'Gulrot',
+    category: 'farming', hidden: true,
+    tex: allFaces('carrot2'),
+    sound: S.GRASS, transparent: true, solid: false, luminance: 0,
+    isCrop: true, cropStage: 2, cropType: 'carrot', nextStageId: 332, harvestId: 281 },
+  { id: 332, key: 'crop_carrot_3',
+    nameEn: 'Carrot (Ready)', nameNo: 'Gulrot (Klar)',
+    category: 'farming', hidden: true,
+    tex: allFaces('carrot3'),
+    sound: S.GRASS, transparent: true, solid: false, luminance: 0,
+    isCrop: true, cropStage: 3, cropType: 'carrot', harvestId: 281 },
+
+  // â”€â”€ Potato (harvestId â†’ food_potato, ID 301) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  { id: 333, key: 'crop_potato_1',
+    nameEn: 'Potato Seeds', nameNo: 'PotetfrÃ¸',
+    category: 'farming',
+    tex: allFaces('potato1'),
+    sound: S.GRASS, transparent: true, solid: false, luminance: 0,
+    isCrop: true, cropStage: 1, cropType: 'potato', nextStageId: 334, harvestId: 301 },
+  { id: 334, key: 'crop_potato_2',
+    nameEn: 'Potato',       nameNo: 'Potet',
+    category: 'farming', hidden: true,
+    tex: allFaces('potato2'),
+    sound: S.GRASS, transparent: true, solid: false, luminance: 0,
+    isCrop: true, cropStage: 2, cropType: 'potato', nextStageId: 335, harvestId: 301 },
+  { id: 335, key: 'crop_potato_3',
+    nameEn: 'Potato (Ready)', nameNo: 'Potet (Klar)',
+    category: 'farming', hidden: true,
+    tex: allFaces('potato3'),
+    sound: S.GRASS, transparent: true, solid: false, luminance: 0,
+    isCrop: true, cropStage: 3, cropType: 'potato', harvestId: 301 },
+
+  // â”€â”€ Tomato (harvestId â†’ food_tomato, ID 302) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  { id: 336, key: 'crop_tomato_1',
+    nameEn: 'Tomato Seeds', nameNo: 'TomatfrÃ¸',
+    category: 'farming',
+    tex: allFaces('tomato1'),
+    sound: S.GRASS, transparent: true, solid: false, luminance: 0,
+    isCrop: true, cropStage: 1, cropType: 'tomato', nextStageId: 337, harvestId: 302 },
+  { id: 337, key: 'crop_tomato_2',
+    nameEn: 'Tomato',       nameNo: 'Tomat',
+    category: 'farming', hidden: true,
+    tex: allFaces('tomato2'),
+    sound: S.GRASS, transparent: true, solid: false, luminance: 0,
+    isCrop: true, cropStage: 2, cropType: 'tomato', nextStageId: 338, harvestId: 302 },
+  { id: 338, key: 'crop_tomato_3',
+    nameEn: 'Tomato (Ready)', nameNo: 'Tomat (Klar)',
+    category: 'farming', hidden: true,
+    tex: allFaces('tomato3'),
+    sound: S.GRASS, transparent: true, solid: false, luminance: 0,
+    isCrop: true, cropStage: 3, cropType: 'tomato', harvestId: 302 },
+
+  // â”€â”€ Onion (harvestId â†’ food_onion, ID 303) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  { id: 339, key: 'crop_onion_1',
+    nameEn: 'Onion Seeds',  nameNo: 'LÃ¸kfrÃ¸',
+    category: 'farming',
+    tex: allFaces('onion1'),
+    sound: S.GRASS, transparent: true, solid: false, luminance: 0,
+    isCrop: true, cropStage: 1, cropType: 'onion', nextStageId: 340, harvestId: 303 },
+  { id: 340, key: 'crop_onion_2',
+    nameEn: 'Onion',        nameNo: 'LÃ¸k',
+    category: 'farming', hidden: true,
+    tex: allFaces('onion2'),
+    sound: S.GRASS, transparent: true, solid: false, luminance: 0,
+    isCrop: true, cropStage: 2, cropType: 'onion', nextStageId: 341, harvestId: 303 },
+  { id: 341, key: 'crop_onion_3',
+    nameEn: 'Onion (Ready)', nameNo: 'LÃ¸k (Klar)',
+    category: 'farming', hidden: true,
+    tex: allFaces('onion3'),
+    sound: S.GRASS, transparent: true, solid: false, luminance: 0,
+    isCrop: true, cropStage: 3, cropType: 'onion', harvestId: 303 },
+
+  // â”€â”€ Decorations â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  { id: 342, key: 'scarecrow',
+    nameEn: 'Scarecrow',    nameNo: 'Fugleskremsel',
+    category: 'farming',
+    tex: allFaces('scarecrow'),
+    sound: S.WOOD, transparent: true, solid: false, luminance: 0 },
+
+  { id: 343, key: 'watering_can',
+    nameEn: 'Watering Can', nameNo: 'Vannkanne',
+    category: 'farming',
+    tex: allFaces('wateringCan'),
+    sound: S.SOFT, transparent: true, solid: false, luminance: 0,
+    isWateringCan: true },
+
+  { id: 344, key: 'hoe',
+    nameEn: 'Hoe',          nameNo: 'Hakke',
+    category: 'farming',
+    tex: allFaces('hoe'),
+    sound: S.STONE, transparent: true, solid: false, luminance: 0,
+    isHoe: true },
 ]
 
-// ─────────────────────────────────────────────────────────────
-//  Generate the 64 colour blocks (16 colours × 4 types)
-//  IDs 50–113
-// ─────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+//  Generate the 64 colour blocks (16 colours Ã— 4 types)
+//  IDs 50â€“113
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export const COLORS_16 = [
   { key: 'white',      en: 'White',       no: 'Hvit',         hex: '#F0F0F0' },
   { key: 'orange',     en: 'Orange',      no: 'Oransje',      hex: '#F08020' },
   { key: 'magenta',    en: 'Magenta',     no: 'Magenta',      hex: '#D040C0' },
-  { key: 'light_blue', en: 'Light Blue',  no: 'Lyseblå',      hex: '#60B0E8' },
+  { key: 'light_blue', en: 'Light Blue',  no: 'LyseblÃ¥',      hex: '#60B0E8' },
   { key: 'yellow',     en: 'Yellow',      no: 'Gul',          hex: '#F0D020' },
-  { key: 'lime',       en: 'Lime',        no: 'Limegrønn',    hex: '#70D820' },
+  { key: 'lime',       en: 'Lime',        no: 'LimegrÃ¸nn',    hex: '#70D820' },
   { key: 'pink',       en: 'Pink',        no: 'Rosa',         hex: '#F080A0' },
-  { key: 'gray',       en: 'Gray',        no: 'Grå',          hex: '#606060' },
-  { key: 'light_gray', en: 'Light Gray',  no: 'Lysegrå',      hex: '#A0A0A0' },
+  { key: 'gray',       en: 'Gray',        no: 'GrÃ¥',          hex: '#606060' },
+  { key: 'light_gray', en: 'Light Gray',  no: 'LysegrÃ¥',      hex: '#A0A0A0' },
   { key: 'cyan',       en: 'Cyan',        no: 'Turkis',       hex: '#20C0D0' },
   { key: 'purple',     en: 'Purple',      no: 'Lilla',        hex: '#8020C0' },
-  { key: 'blue',       en: 'Blue',        no: 'Blå',          hex: '#3050D0' },
+  { key: 'blue',       en: 'Blue',        no: 'BlÃ¥',          hex: '#3050D0' },
   { key: 'brown',      en: 'Brown',       no: 'Brun',         hex: '#804818' },
-  { key: 'green',      en: 'Green',       no: 'Grønn',        hex: '#408020' },
-  { key: 'red',        en: 'Red',         no: 'Rød',          hex: '#C02020' },
+  { key: 'green',      en: 'Green',       no: 'GrÃ¸nn',        hex: '#408020' },
+  { key: 'red',        en: 'Red',         no: 'RÃ¸d',          hex: '#C02020' },
   { key: 'black',      en: 'Black',       no: 'Svart',        hex: '#202020' },
 ]
 
@@ -1927,20 +2087,20 @@ for (const type of COLOR_TYPES) {
   }
 }
 
-// ─────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 //  Stamp category-derived bar-type flags (runs once at load)
 //  isTool:    item belongs exclusively in the tool bar
 //  isProduce: item belongs exclusively in the produce bar
 //  Future activity items can set these flags explicitly on their own definitions.
-// ─────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 for (const b of BLOCKS) {
   if (b.isUtensil) b.isTool = true
   if (b.category === 'food' && !b.isTool) b.isProduce = true
 }
 
-// ─────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 //  Build fast lookup maps
-// ─────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export const BLOCK_BY_ID  = new Map(BLOCKS.map(b => [b.id,  b]))
 export const BLOCK_BY_KEY = new Map(BLOCKS.map(b => [b.key, b]))
 
@@ -1949,9 +2109,9 @@ export function getBlock(id)  { return BLOCK_BY_ID.get(id)  ?? BLOCK_BY_ID.get(0
 /** @param {string} key */
 export function getBlockByKey(key) { return BLOCK_BY_KEY.get(key) }
 
-// ─────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 //  Category ordering for inventory tabs
-// ─────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export const CATEGORIES = [
   'nature', 'wood', 'stone', 'minerals', 'plants',
   'fantasy', 'furniture', 'special', 'seasonal', 'colors', 'decoration',
@@ -1961,10 +2121,10 @@ export function getCategory(cat) {
   return BLOCKS.filter(b => b.category === cat && b.id !== 0 && !b.hidden)
 }
 
-// ─────────────────────────────────────────────────────────────
-//  Block dominant colour — used by particle system
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+//  Block dominant colour â€” used by particle system
 //  Maps the primary texture-style key to a normalised [r,g,b].
-// ─────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export function getBlockColor(def) {
   if (!def?.tex) return [0.55, 0.55, 0.55]
   const key = def.tex.all ?? def.tex.top ?? def.tex.side ?? ''
@@ -1981,3 +2141,4 @@ export function getBlockColor(def) {
   }
   return [0.55, 0.55, 0.55]
 }
+
