@@ -1847,6 +1847,35 @@ export const BLOCKS = [
     category: 'decoration', shape: 'sign', facing: 3,
     tex: { top: 'oakLogSide', bottom: 'oakPlanks', side: 'oakPlanks', front: 'signFace' },
     sound: S.WOOD, solid: true, transparent: true, interactable: 'sign', hidden: true },
+
+  // ══════════════════════════════════════════════════════════
+  //  PHASE 21 — Fireworks (IDs 321–325)
+  // ══════════════════════════════════════════════════════════
+  { id: 321, key: 'firework_red',     nameEn: 'Firework (Red)',     nameNo: 'Fyrverkeri (rød)',
+    category: 'decoration',
+    tex: allFaces('fireworkRed'),    sound: S.WOOD,
+    transparent: true, solid: false, luminance: 0,
+    isFirework: true, burstColors: ['#FF2020', '#FF8020'], interactable: 'firework' },
+  { id: 322, key: 'firework_blue',    nameEn: 'Firework (Blue)',    nameNo: 'Fyrverkeri (blå)',
+    category: 'decoration',
+    tex: allFaces('fireworkBlue'),   sound: S.WOOD,
+    transparent: true, solid: false, luminance: 0,
+    isFirework: true, burstColors: ['#2060FF', '#80C0FF'], interactable: 'firework' },
+  { id: 323, key: 'firework_green',   nameEn: 'Firework (Green)',   nameNo: 'Fyrverkeri (grønn)',
+    category: 'decoration',
+    tex: allFaces('fireworkGreen'),  sound: S.WOOD,
+    transparent: true, solid: false, luminance: 0,
+    isFirework: true, burstColors: ['#20CC40', '#A0FFB0'], interactable: 'firework' },
+  { id: 324, key: 'firework_gold',    nameEn: 'Firework (Gold)',    nameNo: 'Fyrverkeri (gull)',
+    category: 'decoration',
+    tex: allFaces('fireworkGold'),   sound: S.WOOD,
+    transparent: true, solid: false, luminance: 0,
+    isFirework: true, burstColors: ['#FFD020', '#FFF080'], interactable: 'firework' },
+  { id: 325, key: 'firework_rainbow', nameEn: 'Firework (Rainbow)', nameNo: 'Fyrverkeri (regnbue)',
+    category: 'decoration',
+    tex: allFaces('fireworkRainbow'), sound: S.WOOD,
+    transparent: true, solid: false, luminance: 0,
+    isFirework: true, burstColors: 'rainbow', interactable: 'firework' },
 ]
 
 // ─────────────────────────────────────────────────────────────
