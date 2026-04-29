@@ -470,7 +470,6 @@ async function runGame(worldConfig, netOpts = {}) {
   const _fireworks  = []         // active Firework instances
 
   // ── Phase 21 — Fireworks ─────────────────────────────────
-  const _fireworks = []   // active Firework instances
 
   const _SIGN_FACE_POS = [
     (bx, by, bz) => [bx + 0.5,   by + 0.725, bz + 0.527],  // facing=0 S
