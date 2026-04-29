@@ -1824,6 +1824,29 @@ export const BLOCKS = [
     tex: allFaces('dishPancakes'), shape: 'cross',
     sound: S.SOFT, transparent: true, solid: false, luminance: 0,
     isFood: true, foodValue: 4 },
+
+  // ══════════════════════════════════════════════════════════
+  //  PHASE 20 — Signs (IDs 317–320)
+  //  Four facing variants; only sign_s shows in inventory.
+  //  dirGroup maps yaw→facing at placement time.
+  // ══════════════════════════════════════════════════════════
+  { id: 317, key: 'sign_s', nameEn: 'Sign', nameNo: 'Skilt',
+    category: 'decoration', shape: 'sign', facing: 0,
+    tex: { side: 'plank', front: 'signFace' },
+    sound: S.WOOD, solid: true, interactable: 'sign',
+    dirGroup: [317, 318, 319, 320] },
+  { id: 318, key: 'sign_w', nameEn: 'Sign', nameNo: 'Skilt',
+    category: 'decoration', shape: 'sign', facing: 1,
+    tex: { side: 'plank', front: 'signFace' },
+    sound: S.WOOD, solid: true, interactable: 'sign', hidden: true },
+  { id: 319, key: 'sign_n', nameEn: 'Sign', nameNo: 'Skilt',
+    category: 'decoration', shape: 'sign', facing: 2,
+    tex: { side: 'plank', front: 'signFace' },
+    sound: S.WOOD, solid: true, interactable: 'sign', hidden: true },
+  { id: 320, key: 'sign_e', nameEn: 'Sign', nameNo: 'Skilt',
+    category: 'decoration', shape: 'sign', facing: 3,
+    tex: { side: 'plank', front: 'signFace' },
+    sound: S.WOOD, solid: true, interactable: 'sign', hidden: true },
 ]
 
 // ─────────────────────────────────────────────────────────────
@@ -1902,7 +1925,7 @@ export function getBlockByKey(key) { return BLOCK_BY_KEY.get(key) }
 // ─────────────────────────────────────────────────────────────
 export const CATEGORIES = [
   'nature', 'wood', 'stone', 'minerals', 'plants',
-  'fantasy', 'furniture', 'special', 'seasonal', 'colors',
+  'fantasy', 'furniture', 'special', 'seasonal', 'colors', 'decoration',
 ]
 
 export function getCategory(cat) {

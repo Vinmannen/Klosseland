@@ -27,6 +27,7 @@ export class NetworkManager {
     this._onBlockChange = null   // (bx, by, bz, id) => void
     this._onChat        = null   // (name, text) => void
     this._onPlayerEvent = null   // ('join'|'leave', id, name) => void
+    this._onSignUpdate  = null   // (bx, by, bz, text) => void
     this._localState    = null   // () => {x, y, z, yaw, pitch}
 
     // Public state
@@ -61,6 +62,7 @@ export class NetworkManager {
   onBlockChange(fn)  { this._onBlockChange = fn }
   onChat(fn)         { this._onChat = fn }
   onPlayerEvent(fn)  { this._onPlayerEvent = fn }
+  onSignUpdate(fn)   { this._onSignUpdate = fn }
   /** Set a function that returns the local player's current {x,y,z,yaw,pitch}. */
   setLocalState(fn)  { this._localState = fn }
 
@@ -220,6 +222,10 @@ export class NetworkManager {
         this._onBlockChange?.(msg.bx, msg.by, msg.bz, msg.id)
         break
 
+      case 'sign_update':
+        this._onSignUpdate?.(msg.bx | 0, msg.by | 0, msg.bz | 0, msg.text ?? '')
+        break
+
       case 'chat':
         this._onChat?.(msg.name, msg.text, msg.senderId === this._id)
         break
@@ -229,6 +235,10 @@ export class NetworkManager {
   // ── Outgoing sends ────────────────────────────────────────
   sendBlockChange(bx, by, bz, id) {
     this._send({ type: 'block_change', bx: bx | 0, by: by | 0, bz: bz | 0, id: id | 0 })
+  }
+
+  sendSignUpdate(bx, by, bz, text) {
+    this._send({ type: 'sign_update', bx: bx | 0, by: by | 0, bz: bz | 0, text: text ?? '' })
   }
 
   sendChat(text) {

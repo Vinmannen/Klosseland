@@ -70,17 +70,18 @@ const CAT_ICONS = {
 }
 
 const CATEGORIES = [
-  { key: 'nature',    en: 'Nature',    no: 'Natur'     },
-  { key: 'wood',      en: 'Wood',      no: 'Tre'        },
-  { key: 'stone',     en: 'Stone',     no: 'Stein'      },
-  { key: 'minerals',  en: 'Minerals',  no: 'Mineraler'  },
-  { key: 'plants',    en: 'Plants',    no: 'Planter'    },
-  { key: 'fantasy',   en: 'Fantasy',   no: 'Fantasi'    },
-  { key: 'furniture', en: 'Furniture', no: 'Møbler'     },
-  { key: 'special',   en: 'Special',   no: 'Spesial'    },
-  { key: 'seasonal',  en: 'Seasonal',  no: 'Sesong'     },
-  { key: 'colors',    en: 'Colors',    no: 'Farger'     },
-  { key: 'food',      en: 'Food',      no: 'Mat'        },
+  { key: 'nature',      en: 'Nature',      no: 'Natur'       },
+  { key: 'wood',        en: 'Wood',        no: 'Tre'          },
+  { key: 'stone',       en: 'Stone',       no: 'Stein'        },
+  { key: 'minerals',    en: 'Minerals',    no: 'Mineraler'    },
+  { key: 'plants',      en: 'Plants',      no: 'Planter'      },
+  { key: 'fantasy',     en: 'Fantasy',     no: 'Fantasi'      },
+  { key: 'furniture',   en: 'Furniture',   no: 'Møbler'       },
+  { key: 'special',     en: 'Special',     no: 'Spesial'      },
+  { key: 'seasonal',    en: 'Seasonal',    no: 'Sesong'       },
+  { key: 'colors',      en: 'Colors',      no: 'Farger'       },
+  { key: 'food',        en: 'Food',        no: 'Mat'          },
+  { key: 'decoration',  en: 'Decoration',  no: 'Dekorasjon'   },
 ]
 
 // Food subcategory order and labels

@@ -464,6 +464,85 @@ async function runGame(worldConfig, netOpts = {}) {
   // Seed both liquid systems with blocks already in the world
   world.eachChunk(chunk => { waterSystem.scanChunk(chunk); bloodWaterSystem.scanChunk(chunk) })
 
+  // ── 7b. Signs — text overlay meshes ─────────────────────
+  const _signMeshes = new Map()  // "bx,by,bz" → THREE.Mesh
+
+  const _SIGN_FACE_POS = [
+    (bx, by, bz) => [bx + 0.5,   by + 0.725, bz + 0.527],  // facing=0 S
+    (bx, by, bz) => [bx + 0.473, by + 0.725, bz + 0.5  ],  // facing=1 W
+    (bx, by, bz) => [bx + 0.5,   by + 0.725, bz + 0.473],  // facing=2 N
+    (bx, by, bz) => [bx + 0.527, by + 0.725, bz + 0.5  ],  // facing=3 E
+  ]
+  const _SIGN_ROT_Y = [0, Math.PI / 2, Math.PI, -Math.PI / 2]
+
+  function _wrapSignText(text, maxCols) {
+    const words = text.split(' ')
+    const lines = []
+    let line = ''
+    for (const word of words) {
+      const w = word.slice(0, maxCols)
+      if (line.length + (line ? 1 : 0) + w.length <= maxCols) {
+        line += (line ? ' ' : '') + w
+      } else {
+        if (line) lines.push(line)
+        line = w
+      }
+    }
+    if (line) lines.push(line)
+    return lines.slice(0, 3)
+  }
+
+  function updateSignMesh(bx, by, bz, def, text) {
+    const key = `${bx},${by},${bz}`
+    const old = _signMeshes.get(key)
+    if (old) { old.removeFromParent(); old.geometry.dispose(); old.material.map?.dispose(); old.material.dispose() }
+    if (!text) { _signMeshes.delete(key); return }
+
+    const canvas = document.createElement('canvas')
+    canvas.width = 256; canvas.height = 128
+    const ctx2d = canvas.getContext('2d')
+    ctx2d.clearRect(0, 0, 256, 128)
+    ctx2d.fillStyle = '#2A1A08'
+    ctx2d.font = 'bold 20px monospace'
+    ctx2d.textAlign = 'center'
+    ctx2d.textBaseline = 'middle'
+    const lines = _wrapSignText(text, 18)
+    const lineH = 26
+    const startY = 64 - ((lines.length - 1) * lineH) / 2
+    for (let i = 0; i < lines.length; i++) {
+      ctx2d.fillText(lines[i], 128, startY + i * lineH)
+    }
+
+    const tex = new THREE.CanvasTexture(canvas)
+    tex.magFilter = THREE.NearestFilter
+    tex.minFilter = THREE.NearestFilter
+    const mesh = new THREE.Mesh(
+      new THREE.PlaneGeometry(0.82, 0.50),
+      new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false })
+    )
+    const facing = def.facing ?? 0
+    const [px, py, pz] = _SIGN_FACE_POS[facing](bx, by, bz)
+    mesh.position.set(px, py, pz)
+    mesh.rotation.y = _SIGN_ROT_Y[facing]
+    renderer.scene.add(mesh)
+    _signMeshes.set(key, mesh)
+  }
+
+  function removeSignMesh(bx, by, bz) {
+    updateSignMesh(bx, by, bz, null, null)
+  }
+
+  // Restore any sign text from saved meta
+  if (world.save) {
+    world.save.eachSavedBlock((bx, by, bz, id) => {
+      const def = BLOCK_BY_ID.get(id)
+      if (def?.interactable === 'sign') {
+        const meta = world.save.getMeta(bx, by, bz)
+        if (meta?.text) updateSignMesh(bx, by, bz, def, meta.text)
+      }
+    })
+  }
+
   // ── 8. Animals ───────────────────────────────────────────
   const animalSystem = new AnimalSystem(renderer.scene)
 
@@ -502,6 +581,17 @@ async function runGame(worldConfig, netOpts = {}) {
       bloodWaterSystem.onBlockChange(bx, by, bz, id, oldId)
       if (id > 0) lightingSystem.blockPlaced(bx, by, bz, id)
       else        lightingSystem.blockBroken(bx, by, bz)
+    })
+    network.onSignUpdate((bx, by, bz, text) => {
+      const def = BLOCK_BY_ID.get(world.getBlock(bx, by, bz))
+      if (!def) return
+      if (text) {
+        world.save?.setMeta(bx, by, bz, { text })
+        updateSignMesh(bx, by, bz, def, text)
+      } else {
+        world.save?.deleteMeta(bx, by, bz)
+        removeSignMesh(bx, by, bz)
+      }
     })
     network.setLocalState(() => ({
       x: player.x, y: player.y, z: player.z,
@@ -709,6 +799,10 @@ async function runGame(worldConfig, netOpts = {}) {
       network?.sendBlockChange(x, y, z, 0)
       lightingSystem.blockBroken(x, y, z)
       if (def?.liquid) particleSystem.emitWaterSplash(x + 0.5, y + 0.5, z + 0.5)
+      if (def?.interactable === 'sign') {
+        world.save?.deleteMeta(x, y, z)
+        removeSignMesh(x, y, z)
+      }
 
       // Remove any surface decoration sitting on top of the broken block
       const aboveId  = world.getBlock(x, y + 1, z)
@@ -1033,7 +1127,52 @@ async function runGame(worldConfig, netOpts = {}) {
       player.z = sittingAt.pz
       const _bLang = localStorage.getItem('kl_lang') || 'en'
       showToast(_bLang === 'no' ? 'Ahh, deilig bad!' : 'Ahh, so relaxing!', 2500)
+    } else if (def.interactable === 'sign') {
+      openSignEdit(bx, by, bz, def)
     }
+  }
+
+  function openSignEdit(bx, by, bz, def) {
+    const save = world.save
+    const currentText = save?.getMeta(bx, by, bz)?.text ?? ''
+
+    const overlay = document.createElement('div')
+    overlay.id = 'sign-edit-overlay'
+    overlay.innerHTML = `
+      <div class="sign-edit-box">
+        <textarea id="sign-text-input" maxlength="54">${currentText}</textarea>
+      </div>
+    `
+    document.body.appendChild(overlay)
+    controls.unlock()
+
+    const input = overlay.querySelector('#sign-text-input')
+    input.focus()
+    input.setSelectionRange(input.value.length, input.value.length)
+
+    function confirm() {
+      const text = input.value.trim()
+      if (text) {
+        save?.setMeta(bx, by, bz, { text })
+        updateSignMesh(bx, by, bz, def, text)
+      } else {
+        save?.deleteMeta(bx, by, bz)
+        removeSignMesh(bx, by, bz)
+      }
+      network?.sendSignUpdate(bx, by, bz, text)
+      closeOverlay()
+    }
+
+    function closeOverlay() {
+      overlay.remove()
+      controls.lock()
+    }
+
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); confirm() }
+      else if (e.key === 'Escape') closeOverlay()
+    })
+    overlay.addEventListener('click', e => { if (e.target === overlay) closeOverlay() })
   }
 
   function loop(ts) {

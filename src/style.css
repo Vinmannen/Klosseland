@@ -1272,3 +1272,36 @@ html, body {
   color: #fff;
   font-weight: 700;
 }
+
+/* ── Sign edit overlay ──────────────────────────────────────── */
+#sign-edit-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 900;
+}
+.sign-edit-box {
+  background: #5A3C1A;
+  border: 3px solid #3A2408;
+  border-radius: 6px;
+  padding: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+}
+#sign-text-input {
+  font-family: monospace;
+  font-size: 18px;
+  width: 240px;
+  height: 80px;
+  resize: none;
+  background: #E8D8A0;
+  color: #2A1A08;
+  border: 3px solid #8A6030;
+  border-radius: 4px;
+  padding: 6px;
+  text-align: center;
+  display: block;
+  outline: none;
+}

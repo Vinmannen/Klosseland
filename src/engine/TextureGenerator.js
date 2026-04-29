@@ -2972,6 +2972,22 @@ DRAW.dishPancakes = ctx => {
 }
 
 // ─────────────────────────────────────────────────────────────
+//  Phase 20 — Signs
+// ─────────────────────────────────────────────────────────────
+
+DRAW.signFace = ctx => {
+  fill(ctx, '#E8D8A0')
+  // 4px dark border on all sides
+  rect(ctx, 0,   0,   S, 1, '#8A6030')
+  rect(ctx, 0,   S-1, S, 1, '#8A6030')
+  rect(ctx, 0,   0,   1, S, '#8A6030')
+  rect(ctx, S-1, 0,   1, S, '#8A6030')
+  // Subtle horizontal line guides (faint)
+  rect(ctx, 1, 5,  S-2, 1, '#D4C490')
+  rect(ctx, 1, 10, S-2, 1, '#D4C490')
+}
+
+// ─────────────────────────────────────────────────────────────
 //  Colour blocks (generated dynamically)
 // ─────────────────────────────────────────────────────────────
 for (const color of COLORS_16) {

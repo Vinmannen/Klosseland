@@ -404,6 +404,9 @@ export class World {
     for (const chunk of this._chunks.values()) fn(chunk)
   }
 
+  /** The WorldSave instance, or null for unsaved worlds (join mode). */
+  get save() { return this._save }
+
   /** Biome ID at world (wx, wz). Delegates to WorldGen. */
   getBiomeAt(wx, wz) {
     return this._gen.getBiome(wx, wz)
