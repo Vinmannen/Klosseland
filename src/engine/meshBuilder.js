@@ -617,20 +617,22 @@ function _addCustomShape(bucket, lx, y, lz, def, getUV) {
 
   } else if (shape === 'sign') {
     // Sign — thin post + panel. facing=0: post at block centre, panel faces +Z (south).
-    // frontUV (slot 3) = signFace for the readable face; sideUV (plank) for everything else.
+    // topUV  (slot 0) = oakLogSide → post (vertical bark grain)
+    // sideUV (slot 2) = oakPlanks  → panel back/edges/top/bottom
+    // frontUV(slot 3) = signFace   → panel readable face
     const PX0 = 0.46, PX1 = 0.54, PZ0 = 0.46, PZ1 = 0.54, POST_H = 0.5
     const PNX0 = 0.075, PNX1 = 0.925, PNZ0 = 0.475, PNZ1 = 0.525
     const PNY0 = 0.45,  PNY1 = 1.0
     const fr = frontUV || sideUV
-    // Post faces
-    addQF([[PX0,POST_H,PZ0],[PX0,POST_H,PZ1],[PX1,POST_H,PZ1],[PX1,POST_H,PZ0]], 0, 1,0, topUV,  UV_TOP)
-    addQF([[PX0,0,PZ0],[PX1,0,PZ0],[PX1,0,PZ1],[PX0,0,PZ1]],                     0,-1,0, botUV,  UV_BOT)
-    addQF([[PX1,0,PZ0],[PX0,0,PZ0],[PX0,POST_H,PZ0],[PX1,POST_H,PZ0]],           0, 0,-1, sideUV, UV_N)
-    addQF([[PX0,0,PZ1],[PX1,0,PZ1],[PX1,POST_H,PZ1],[PX0,POST_H,PZ1]],           0, 0, 1, sideUV, UV_S)
-    addQF([[PX1,0,PZ1],[PX1,0,PZ0],[PX1,POST_H,PZ0],[PX1,POST_H,PZ1]],           1, 0,0, sideUV, UV_E)
-    addQF([[PX0,0,PZ0],[PX0,0,PZ1],[PX0,POST_H,PZ1],[PX0,POST_H,PZ0]],          -1, 0,0, sideUV, UV_W)
-    // Panel faces (front/south face uses signFace texture via slot 3)
-    addQF([[PNX0,PNY1,PNZ0],[PNX0,PNY1,PNZ1],[PNX1,PNY1,PNZ1],[PNX1,PNY1,PNZ0]], 0, 1,0, topUV,  UV_TOP)
+    // Post faces — all use topUV (oakLogSide = vertical bark)
+    addQF([[PX0,POST_H,PZ0],[PX0,POST_H,PZ1],[PX1,POST_H,PZ1],[PX1,POST_H,PZ0]], 0, 1,0, topUV, UV_TOP)
+    addQF([[PX0,0,PZ0],[PX1,0,PZ0],[PX1,0,PZ1],[PX0,0,PZ1]],                     0,-1,0, topUV, UV_BOT)
+    addQF([[PX1,0,PZ0],[PX0,0,PZ0],[PX0,POST_H,PZ0],[PX1,POST_H,PZ0]],           0, 0,-1, topUV, UV_N)
+    addQF([[PX0,0,PZ1],[PX1,0,PZ1],[PX1,POST_H,PZ1],[PX0,POST_H,PZ1]],           0, 0, 1, topUV, UV_S)
+    addQF([[PX1,0,PZ1],[PX1,0,PZ0],[PX1,POST_H,PZ0],[PX1,POST_H,PZ1]],           1, 0,0, topUV, UV_E)
+    addQF([[PX0,0,PZ0],[PX0,0,PZ1],[PX0,POST_H,PZ1],[PX0,POST_H,PZ0]],          -1, 0,0, topUV, UV_W)
+    // Panel faces — sideUV (oakPlanks) everywhere except the readable front face
+    addQF([[PNX0,PNY1,PNZ0],[PNX0,PNY1,PNZ1],[PNX1,PNY1,PNZ1],[PNX1,PNY1,PNZ0]], 0, 1,0, sideUV, UV_TOP)
     addQF([[PNX0,PNY0,PNZ0],[PNX1,PNY0,PNZ0],[PNX1,PNY0,PNZ1],[PNX0,PNY0,PNZ1]], 0,-1,0, botUV,  UV_BOT)
     addQF([[PNX1,PNY0,PNZ0],[PNX0,PNY0,PNZ0],[PNX0,PNY1,PNZ0],[PNX1,PNY1,PNZ0]], 0, 0,-1, sideUV, UV_N)
     addQF([[PNX0,PNY0,PNZ1],[PNX1,PNY0,PNZ1],[PNX1,PNY1,PNZ1],[PNX0,PNY1,PNZ1]], 0, 0, 1, fr,     UV_S)
