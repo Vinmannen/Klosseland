@@ -24,11 +24,12 @@ export class NetworkManager {
     this._syncTimer = 0
 
     // Callbacks set by the caller
-    this._onBlockChange = null   // (bx, by, bz, id) => void
-    this._onChat        = null   // (name, text) => void
-    this._onPlayerEvent = null   // ('join'|'leave', id, name) => void
-    this._onSignUpdate  = null   // (bx, by, bz, text) => void
-    this._localState    = null   // () => {x, y, z, yaw, pitch}
+    this._onBlockChange      = null   // (bx, by, bz, id) => void
+    this._onChat             = null   // (name, text) => void
+    this._onPlayerEvent      = null   // ('join'|'leave', id, name) => void
+    this._onSignUpdate       = null   // (bx, by, bz, text) => void
+    this._onFireworkLaunch   = null   // (wx, wy, wz, fwType) => void
+    this._localState         = null   // () => {x, y, z, yaw, pitch}
 
     // Public state
     this.myId      = null
@@ -59,12 +60,13 @@ export class NetworkManager {
     this._playerBuf = []
   }
 
-  onBlockChange(fn)  { this._onBlockChange = fn }
-  onChat(fn)         { this._onChat = fn }
-  onPlayerEvent(fn)  { this._onPlayerEvent = fn }
-  onSignUpdate(fn)   { this._onSignUpdate = fn }
+  onBlockChange(fn)      { this._onBlockChange = fn }
+  onChat(fn)             { this._onChat = fn }
+  onPlayerEvent(fn)      { this._onPlayerEvent = fn }
+  onSignUpdate(fn)       { this._onSignUpdate = fn }
+  onFireworkLaunch(fn)   { this._onFireworkLaunch = fn }
   /** Set a function that returns the local player's current {x,y,z,yaw,pitch}. */
-  setLocalState(fn)  { this._localState = fn }
+  setLocalState(fn)      { this._localState = fn }
 
   // ── Connect ───────────────────────────────────────────────
   /**
@@ -226,6 +228,10 @@ export class NetworkManager {
         this._onSignUpdate?.(msg.bx | 0, msg.by | 0, msg.bz | 0, msg.text ?? '')
         break
 
+      case 'firework_launch':
+        this._onFireworkLaunch?.(msg.wx | 0, msg.wy | 0, msg.wz | 0, msg.fwType ?? '')
+        break
+
       case 'chat':
         this._onChat?.(msg.name, msg.text, msg.senderId === this._id)
         break
@@ -239,6 +245,10 @@ export class NetworkManager {
 
   sendSignUpdate(bx, by, bz, text) {
     this._send({ type: 'sign_update', bx: bx | 0, by: by | 0, bz: bz | 0, text: text ?? '' })
+  }
+
+  sendFireworkLaunch(wx, wy, wz, fwType) {
+    this._send({ type: 'firework_launch', wx: wx | 0, wy: wy | 0, wz: wz | 0, fwType: fwType ?? '' })
   }
 
   sendChat(text) {

@@ -195,6 +195,46 @@ export class ParticleSystem {
     }
   }
 
+  /**
+   * Firework trail — 2 faint sparks left behind the rising rocket.
+   */
+  emitFireworkTrail(x, y, z) {
+    for (let i = 0; i < 2; i++) {
+      this._spawnEx(
+        x + (Math.random() - 0.5) * 0.15,
+        y,
+        z + (Math.random() - 0.5) * 0.15,
+        (Math.random() - 0.5) * 0.6,
+        -(Math.random() * 1.5),
+        (Math.random() - 0.5) * 0.6,
+        1.0, 0.85, 0.4,
+        0.15,
+        0.10,
+        3,
+      )
+    }
+  }
+
+  /**
+   * Firework burst — one particle launched in a random sphere direction.
+   * Call 60 times for the full burst.
+   */
+  emitFireworkBurst(x, y, z, r, g, b) {
+    const theta = Math.random() * Math.PI * 2
+    const phi   = Math.acos(2 * Math.random() - 1)
+    const speed = 8 + Math.random() * 6
+    this._spawnEx(
+      x, y, z,
+      Math.sin(phi) * Math.cos(theta) * speed,
+      Math.cos(phi) * speed,
+      Math.sin(phi) * Math.sin(theta) * speed,
+      r, g, b,
+      1.8,
+      0.18,
+      6,
+    )
+  }
+
   // ── Per-frame update ──────────────────────────────────────
 
   /**

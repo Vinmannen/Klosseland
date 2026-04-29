@@ -2988,6 +2988,57 @@ DRAW.signFace = ctx => {
 }
 
 // ─────────────────────────────────────────────────────────────
+//  Phase 21 — Fireworks
+//  Rocket silhouette: dark body, colored nose + fins, flame.
+// ─────────────────────────────────────────────────────────────
+
+function drawFirework(ctx, noseColor, finColor) {
+  ctx.clearRect(0, 0, S, S)
+  const bodyX = 7, bodyW = 2, bodyY = 5, bodyH = 8
+  // Body
+  rect(ctx, bodyX, bodyY, bodyW, bodyH, '#202028')
+  px(ctx, bodyX, bodyY, '#38383E')
+  // Nose cone
+  rect(ctx, bodyX, bodyY - 2, bodyW, 2, noseColor)
+  px(ctx, bodyX,          bodyY - 3, shade(noseColor, 0.15))
+  px(ctx, bodyX + 1,      bodyY - 3, shade(noseColor, 0.15))
+  // Left fin
+  rect(ctx, bodyX - 2, bodyY + bodyH - 3, 2, 3, finColor)
+  px(ctx, bodyX - 2, bodyY + bodyH - 3, shade(finColor, -0.15))
+  // Right fin
+  rect(ctx, bodyX + bodyW, bodyY + bodyH - 3, 2, 3, finColor)
+  px(ctx, bodyX + bodyW + 1, bodyY + bodyH - 3, shade(finColor, -0.15))
+  // Flame
+  px(ctx, bodyX,     bodyY + bodyH,     '#FF8020')
+  px(ctx, bodyX + 1, bodyY + bodyH,     '#FF8020')
+  px(ctx, bodyX,     bodyY + bodyH + 1, '#FFD020')
+}
+
+DRAW.fireworkRed     = ctx => drawFirework(ctx, '#FF2020', '#FF8020')
+DRAW.fireworkBlue    = ctx => drawFirework(ctx, '#2060FF', '#80C0FF')
+DRAW.fireworkGreen   = ctx => drawFirework(ctx, '#20CC40', '#A0FFB0')
+DRAW.fireworkGold    = ctx => drawFirework(ctx, '#FFD020', '#FFF080')
+DRAW.fireworkRainbow = ctx => {
+  ctx.clearRect(0, 0, S, S)
+  const bodyX = 7, bodyW = 2, bodyY = 5, bodyH = 8
+  rect(ctx, bodyX, bodyY, bodyW, bodyH, '#202028')
+  px(ctx, bodyX, bodyY, '#38383E')
+  // Rainbow striped nose
+  const noseColors = ['#FF2020', '#FF8020', '#FFD020', '#20CC40', '#2060FF', '#A020D0']
+  for (let i = 0; i < 3; i++) {
+    const c = noseColors[i * 2]
+    rect(ctx, bodyX, bodyY - 3 + i, bodyW, 1, c)
+  }
+  // Rainbow fins (left/right different hues)
+  rect(ctx, bodyX - 2, bodyY + bodyH - 3, 2, 3, '#FF2020')
+  rect(ctx, bodyX + bodyW, bodyY + bodyH - 3, 2, 3, '#2060FF')
+  // Flame
+  px(ctx, bodyX,     bodyY + bodyH,     '#FF8020')
+  px(ctx, bodyX + 1, bodyY + bodyH,     '#FFD020')
+  px(ctx, bodyX,     bodyY + bodyH + 1, '#FF4080')
+}
+
+// ─────────────────────────────────────────────────────────────
 //  Colour blocks (generated dynamically)
 // ─────────────────────────────────────────────────────────────
 for (const color of COLORS_16) {

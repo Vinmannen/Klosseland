@@ -30,7 +30,8 @@ import { DayNightCycle }    from './systems/DayNightCycle.js'
 import { NetworkManager }   from './systems/NetworkManager.js'
 import { WaterSystem }      from './systems/WaterSystem.js'
 import { ParticleSystem }   from './systems/ParticleSystem.js'
-import { BLOCK_BY_ID, getBlockColor } from './data/blockDefinitions.js'
+import { BLOCK_BY_ID, BLOCK_BY_KEY, getBlockColor } from './data/blockDefinitions.js'
+import { Firework } from './entities/Firework.js'
 import { ChatUI }           from './ui/ChatUI.js'
 import { PlayerMesh }       from './entities/PlayerMesh.js'
 import { AnimationSystem }  from './systems/AnimationSystem.js'
@@ -467,6 +468,9 @@ async function runGame(worldConfig, netOpts = {}) {
   // ── 7b. Signs — text overlay meshes ─────────────────────
   const _signMeshes = new Map()  // "bx,by,bz" → THREE.Mesh
 
+  // ── Phase 21 — Fireworks ─────────────────────────────────
+  const _fireworks = []   // active Firework instances
+
   const _SIGN_FACE_POS = [
     (bx, by, bz) => [bx + 0.5,   by + 0.725, bz + 0.527],  // facing=0 S
     (bx, by, bz) => [bx + 0.473, by + 0.725, bz + 0.5  ],  // facing=1 W
@@ -593,6 +597,11 @@ async function runGame(worldConfig, netOpts = {}) {
         removeSignMesh(bx, by, bz)
       }
     })
+    network.onFireworkLaunch((wx, wy, wz, fwType) => {
+      const def = BLOCK_BY_KEY.get(fwType)
+      if (!def?.isFirework) return
+      _fireworks.push(new Firework(renderer.scene, particleSystem, soundSystem, wx, wy, wz, def.burstColors))
+    })
     network.setLocalState(() => ({
       x: player.x, y: player.y, z: player.z,
       yaw: camera.yaw, pitch: 0,
@@ -641,6 +650,8 @@ async function runGame(worldConfig, netOpts = {}) {
     copyPaste.dispose()
     animalSystem.dispose()
     petSystem.dispose()
+    for (const fw of _fireworks) fw.dispose()
+    _fireworks.length = 0
     particleSystem.dispose()
     weatherSystem.dispose()
     dayNightCycle.dispose()
@@ -1108,6 +1119,13 @@ async function runGame(worldConfig, netOpts = {}) {
       openStove(def.interactable, inventory, atlas, showToast, controls, lang)
     else if (def.interactable === 'recipebook')
       openRecipeBook(atlas, controls, lang)
+    else if (def.interactable === 'firework') {
+      world.setBlock(bx, by, bz, 0)
+      network?.sendBlockChange(bx, by, bz, 0)
+      const fw = new Firework(renderer.scene, particleSystem, soundSystem, bx, by, bz, def.burstColors)
+      _fireworks.push(fw)
+      network?.sendFireworkLaunch(bx, by, bz, def.key)
+    }
     else if (def.interactable === 'bathtub') {
       // Resolve to main block if player clicked a companion part
       let mainBx = bx, mainBy = by, mainBz = bz
@@ -1238,13 +1256,15 @@ async function runGame(worldConfig, netOpts = {}) {
       renderer.camera.getWorldDirection(_rayDir)
       const cam = renderer.camera.position
       const selectedId = inventory.selectedBlockId()
-      const spongeHitTest = selectedId === SPONGE_ID
-        ? (bx, by, bz) => world.getBlock(bx, by, bz) === WATER_SOURCE_ID
-        : null
       const ray = castRay(
         cam.x, cam.y, cam.z,
         _rayDir.x, _rayDir.y, _rayDir.z,
-        REACH_DISTANCE, world, spongeHitTest,
+        REACH_DISTANCE, world,
+        (bx, by, bz) => {
+          const _bid = world.getBlock(bx, by, bz)
+          if (selectedId === SPONGE_ID && _bid === WATER_SOURCE_ID) return true
+          return BLOCK_BY_ID.get(_bid)?.interactable === 'firework'
+        },
       )
 
       // ── Creative tool keys (no ray required) ─────────────
@@ -1410,8 +1430,10 @@ async function runGame(worldConfig, netOpts = {}) {
           standUp()
         } else if (sleepingAt) {
           wakeUp()
-        } else if (ray.hit) {
-          handleInteract(ray.bx, ray.by, ray.bz)
+        } else {
+          if (ray.hit) {
+            handleInteract(ray.bx, ray.by, ray.bz)
+          }
         }
       }
 
@@ -1488,6 +1510,14 @@ async function runGame(worldConfig, netOpts = {}) {
 
       // Network update (remote player interpolation + position sync)
       network?.update(dt)
+
+      // ── Phase 21 — Firework update ───────────────────────
+      for (let _fi = _fireworks.length - 1; _fi >= 0; _fi--) {
+        if (_fireworks[_fi].update(dt)) {
+          _fireworks[_fi].dispose()
+          _fireworks.splice(_fi, 1)
+        }
+      }
 
       const flyEl = document.getElementById('hud-fly')
       if (flyEl) flyEl.textContent = player.flying ? '✈ Flying' : ''
