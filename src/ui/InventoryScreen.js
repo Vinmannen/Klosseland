@@ -106,7 +106,7 @@ const BLOCKS_BY_CAT = new Map(
   CATEGORIES.map(c => [c.key, BLOCKS.filter(b => b.category === c.key && !b.hidden)])
 )
 
-const TILE_SIZE = 52
+const TILE_SIZE = 56
 
 function topStyle(def) {
   if (!def?.tex) return null
@@ -297,6 +297,11 @@ export class InventoryScreen {
         wrap.appendChild(c)
       }
     }
+
+    const num = document.createElement('span')
+    num.className   = 'inv-hb-num'
+    num.textContent = String(index + 1)
+    wrap.appendChild(num)
 
     wrap.addEventListener('click', () => {
       if (barType === 'tool')    this._inv.selectToolSlot(index)
