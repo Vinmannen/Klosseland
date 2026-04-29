@@ -217,6 +217,10 @@ export default {
   settings_controls:      'Controls',
   settings_colorblind:    'Colourblind Mode',
   settings_show_fps:      'Show FPS',
+  settings_farm_speed:    'Crop Growth Speed',
+  settings_farm_fast:     'Fast (1 day per stage)',
+  settings_farm_normal:   'Normal (2 days per stage)',
+  settings_farm_slow:     'Slow (3 days per stage)',
   settings_apply:         'Apply',
 
   // ── Controls reference ───────────────────────────────────

@@ -67,6 +67,14 @@ const CAT_ICONS = {
     <path d="M5 4 Q7 1 9 4" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" fill="none"/>
     <line x1="7" y1="3.5" x2="7" y2="1" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>
   </svg>`,
+  farming: `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+    <line x1="7" y1="13" x2="7" y2="7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+    <line x1="4" y1="13" x2="4" y2="9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+    <line x1="10" y1="13" x2="10" y2="9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+    <path d="M5 7 Q7 4 9 7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/>
+    <path d="M2 9 Q4 6 6 9" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" fill="none"/>
+    <path d="M8 9 Q10 6 12 9" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" fill="none"/>
+  </svg>`,
 }
 
 const CATEGORIES = [
@@ -81,6 +89,7 @@ const CATEGORIES = [
   { key: 'seasonal',    en: 'Seasonal',    no: 'Sesong'       },
   { key: 'colors',      en: 'Colors',      no: 'Farger'       },
   { key: 'food',        en: 'Food',        no: 'Mat'          },
+  { key: 'farming',     en: 'Farming',     no: 'Gård'         },
   { key: 'decoration',  en: 'Decoration',  no: 'Dekorasjon'   },
 ]
 

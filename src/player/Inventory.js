@@ -59,6 +59,31 @@ export class Inventory {
     return this.produceSlots[this.selectedProduceSlot] ?? null
   }
 
+  /**
+   * Add a block to the hotbar: fills an empty slot, skips if already present,
+   * otherwise replaces the currently selected slot.
+   */
+  addToHotbar(id) {
+    if (this.slots.includes(id)) return
+    const empty = this.slots.indexOf(null)
+    if (empty >= 0) { this.slots[empty] = id; this._emit(); return }
+    this.slots[this.selectedSlot] = id
+    this._emit()
+  }
+
+  /**
+   * Add a food/produce item to the produce bar.
+   * Stacks into an existing slot for the same id, then fills the first empty slot.
+   */
+  addToProduce(id) {
+    const existing = this.produceSlots.indexOf(id)
+    if (existing >= 0) return  // already in bar
+    const empty = this.produceSlots.indexOf(null)
+    if (empty >= 0) { this.produceSlots[empty] = id; this._emit(); return }
+    this.produceSlots[this.selectedProduceSlot] = id
+    this._emit()
+  }
+
   /** Replace a block in a hotbar slot and notify listeners. */
   setSlot(i, blockId) {
     if (i < 0 || i >= this.slots.length) return
