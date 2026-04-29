@@ -146,6 +146,20 @@ wss.on('connection', ws => {
         break
       }
 
+      case 'sign_update': {
+        const bx = msg.bx | 0, by = msg.by | 0, bz = msg.bz | 0
+        const text = String(msg.text || '').slice(0, 200)
+        broadcast({ type: 'sign_update', bx, by, bz, text }, id)
+        break
+      }
+
+      case 'firework_launch': {
+        const wx = msg.wx | 0, wy = msg.wy | 0, wz = msg.wz | 0
+        const fwType = String(msg.fwType || '').slice(0, 40)
+        broadcast({ type: 'firework_launch', wx, wy, wz, fwType }, id)
+        break
+      }
+
       case 'chat': {
         const text = String(msg.text || '').slice(0, 200)
         const name = players.get(id)?.name ?? 'Unknown'

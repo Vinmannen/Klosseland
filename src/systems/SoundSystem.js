@@ -594,6 +594,30 @@ export class SoundSystem {
     osc.onended = () => { try { osc.disconnect(); filt.disconnect(); g.disconnect() } catch (_) {} }
   }
 
+  playFireworkWhistle() {
+    if (!this._ctx) return
+    const now = this._ctx.currentTime
+    const osc = this._ctx.createOscillator()
+    osc.type = 'sine'
+    osc.frequency.setValueAtTime(300, now)
+    osc.frequency.linearRampToValueAtTime(1800, now + 1.5)
+    const g = this._ctx.createGain()
+    g.gain.setValueAtTime(0.35, now)
+    g.gain.exponentialRampToValueAtTime(0.0001, now + 1.55)
+    osc.connect(g); g.connect(this._sfxGain)
+    osc.start(now); osc.stop(now + 1.6)
+    osc.onended = () => { try { osc.disconnect(); g.disconnect() } catch (_) {} }
+  }
+
+  playFireworkBang() {
+    if (!this._ctx) return
+    const now = this._ctx.currentTime
+    this._noise(now,        0.20, 'bandpass',  600, 0.8, 0.90)
+    this._noise(now + 0.10, 0.08, 'bandpass',  800, 1.2, 0.50)
+    this._noise(now + 0.25, 0.06, 'bandpass', 1000, 1.5, 0.35)
+    this._noise(now + 0.50, 0.05, 'bandpass', 1200, 1.8, 0.20)
+  }
+
   _mysticalTone(now, vol) {
     const freqs = [110, 138, 165, 220]
     const root  = freqs[Math.floor(Math.random() * freqs.length)]

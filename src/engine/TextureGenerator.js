@@ -2988,6 +2988,44 @@ DRAW.signFace = ctx => {
 }
 
 // ─────────────────────────────────────────────────────────────
+//  Fireworks
+// ─────────────────────────────────────────────────────────────
+function drawFirework(ctx, noseColor, finColor) {
+  ctx.clearRect(0, 0, S, S)
+  const bodyX = 7, bodyW = 2, bodyY = 5, bodyH = 8
+  rect(ctx, bodyX, bodyY, bodyW, bodyH, '#202028')
+  rect(ctx, bodyX, bodyY - 2, bodyW, 2, noseColor)
+  px(ctx, bodyX,         bodyY - 3, shade(noseColor, 0.3))
+  px(ctx, bodyX + 1,     bodyY - 3, shade(noseColor, 0.3))
+  rect(ctx, bodyX - 2, bodyY + bodyH - 3, 2, 3, finColor)
+  rect(ctx, bodyX + bodyW, bodyY + bodyH - 3, 2, 3, finColor)
+  px(ctx, bodyX,     bodyY + bodyH, '#FF8020')
+  px(ctx, bodyX + 1, bodyY + bodyH, '#FFD040')
+  px(ctx, bodyX,     bodyY + bodyH + 1, '#FF4000')
+  px(ctx, bodyX + 1, bodyY + bodyH + 1, '#FF8020')
+}
+DRAW.fireworkRed     = ctx => drawFirework(ctx, '#FF2020', '#FF8020')
+DRAW.fireworkBlue    = ctx => drawFirework(ctx, '#2060FF', '#80C0FF')
+DRAW.fireworkGreen   = ctx => drawFirework(ctx, '#20CC40', '#A0FFB0')
+DRAW.fireworkGold    = ctx => drawFirework(ctx, '#FFD020', '#FFF080')
+DRAW.fireworkRainbow = ctx => {
+  ctx.clearRect(0, 0, S, S)
+  const bodyX = 7, bodyW = 2, bodyY = 5, bodyH = 8
+  rect(ctx, bodyX, bodyY, bodyW, bodyH, '#202028')
+  const rainbow = ['#FF2020','#FF8020','#FFD020','#20CC40','#2060FF','#A040FF']
+  for (let i = 0; i < rainbow.length; i++) {
+    rect(ctx, bodyX, bodyY - 2 + Math.floor(i / 3), 1, 1, rainbow[i])
+    rect(ctx, bodyX + 1, bodyY - 2 + Math.floor(i / 3), 1, 1, rainbow[(i + 3) % 6])
+  }
+  rect(ctx, bodyX - 2, bodyY + bodyH - 3, 2, 3, '#FFD020')
+  rect(ctx, bodyX + bodyW, bodyY + bodyH - 3, 2, 3, '#FF2020')
+  px(ctx, bodyX,     bodyY + bodyH, '#FF8020')
+  px(ctx, bodyX + 1, bodyY + bodyH, '#FFD040')
+  px(ctx, bodyX,     bodyY + bodyH + 1, '#FF4000')
+  px(ctx, bodyX + 1, bodyY + bodyH + 1, '#FF8020')
+}
+
+// ─────────────────────────────────────────────────────────────
 //  Colour blocks (generated dynamically)
 // ─────────────────────────────────────────────────────────────
 for (const color of COLORS_16) {
