@@ -469,6 +469,9 @@ async function runGame(worldConfig, netOpts = {}) {
   const _signMeshes = new Map()  // "bx,by,bz" → THREE.Mesh
   const _fireworks  = []         // active Firework instances
 
+  // ── Phase 21 — Fireworks ─────────────────────────────────
+  const _fireworks = []   // active Firework instances
+
   const _SIGN_FACE_POS = [
     (bx, by, bz) => [bx + 0.5,   by + 0.725, bz + 0.527],  // facing=0 S
     (bx, by, bz) => [bx + 0.473, by + 0.725, bz + 0.5  ],  // facing=1 W
@@ -648,6 +651,8 @@ async function runGame(worldConfig, netOpts = {}) {
     copyPaste.dispose()
     animalSystem.dispose()
     petSystem.dispose()
+    for (const fw of _fireworks) fw.dispose()
+    _fireworks.length = 0
     particleSystem.dispose()
     weatherSystem.dispose()
     dayNightCycle.dispose()
@@ -1428,8 +1433,10 @@ async function runGame(worldConfig, netOpts = {}) {
           standUp()
         } else if (sleepingAt) {
           wakeUp()
-        } else if (ray.hit) {
-          handleInteract(ray.bx, ray.by, ray.bz)
+        } else {
+          if (ray.hit) {
+            handleInteract(ray.bx, ray.by, ray.bz)
+          }
         }
       }
 
@@ -1507,7 +1514,7 @@ async function runGame(worldConfig, netOpts = {}) {
       // Network update (remote player interpolation + position sync)
       network?.update(dt)
 
-      // Fireworks update
+      // ── Phase 21 — Firework update ───────────────────────
       for (let _fi = _fireworks.length - 1; _fi >= 0; _fi--) {
         if (_fireworks[_fi].update(dt)) {
           _fireworks[_fi].dispose()

@@ -1847,6 +1847,10 @@ export const BLOCKS = [
     category: 'decoration', shape: 'sign', facing: 3,
     tex: { top: 'oakLogSide', bottom: 'oakPlanks', side: 'oakPlanks', front: 'signFace' },
     sound: S.WOOD, solid: true, transparent: true, interactable: 'sign', hidden: true },
+
+  // ══════════════════════════════════════════════════════════
+  //  PHASE 21 — Fireworks (IDs 321–325)
+  // ══════════════════════════════════════════════════════════
   { id: 321, key: 'firework_red',     nameEn: 'Firework (Red)',     nameNo: 'Fyrverkeri (rød)',
     category: 'decoration',
     tex: allFaces('fireworkRed'),    sound: S.WOOD,

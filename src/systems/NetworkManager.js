@@ -24,12 +24,12 @@ export class NetworkManager {
     this._syncTimer = 0
 
     // Callbacks set by the caller
-    this._onBlockChange    = null   // (bx, by, bz, id) => void
-    this._onChat           = null   // (name, text) => void
-    this._onPlayerEvent    = null   // ('join'|'leave', id, name) => void
-    this._onSignUpdate     = null   // (bx, by, bz, text) => void
-    this._onFireworkLaunch = null   // (wx, wy, wz, fwType) => void
-    this._localState       = null   // () => {x, y, z, yaw, pitch}
+    this._onBlockChange      = null   // (bx, by, bz, id) => void
+    this._onChat             = null   // (name, text) => void
+    this._onPlayerEvent      = null   // ('join'|'leave', id, name) => void
+    this._onSignUpdate       = null   // (bx, by, bz, text) => void
+    this._onFireworkLaunch   = null   // (wx, wy, wz, fwType) => void
+    this._localState         = null   // () => {x, y, z, yaw, pitch}
 
     // Public state
     this.myId      = null
@@ -66,7 +66,7 @@ export class NetworkManager {
   onSignUpdate(fn)       { this._onSignUpdate = fn }
   onFireworkLaunch(fn)   { this._onFireworkLaunch = fn }
   /** Set a function that returns the local player's current {x,y,z,yaw,pitch}. */
-  setLocalState(fn)  { this._localState = fn }
+  setLocalState(fn)      { this._localState = fn }
 
   // ── Connect ───────────────────────────────────────────────
   /**
