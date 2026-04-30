@@ -44,6 +44,7 @@ const CONTROLS = [
   { key: 'F2',            label: 'ctrl_screenshot' },
   { key: 'F5',            label: 'ctrl_camera'     },
   { key: 'Esc',           label: 'ctrl_pause'      },
+  { key: 'G',             label: 'ctrl_stamp'      },
 ]
 const CTRL_MULTIPLAYER = { key: 'T', label: 'ctrl_chat' }
 
