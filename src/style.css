@@ -1305,3 +1305,99 @@ html, body {
   display: block;
   outline: none;
 }
+
+/* ╔══════════════════════════════════════════════════════════╗
+   ║  PHASE 23 — PHOTO MODE                                   ║
+   ╚══════════════════════════════════════════════════════════╝ */
+
+/* Hide all HUD elements in photo mode */
+body.photo-mode #hud-hotbar,
+body.photo-mode #hud-hotbar-label,
+body.photo-mode #hud-crosshair,
+body.photo-mode #hud-fly,
+body.photo-mode #hud-fps,
+body.photo-mode #hud-net,
+body.photo-mode #hud-compass-wrap,
+body.photo-mode #hud-coords,
+body.photo-mode #hud-tool-bar,
+body.photo-mode #hud-produce-bar,
+body.photo-mode #minimap,
+body.photo-mode #hud-lang,
+body.photo-mode #chat-root { display: none !important; }
+
+/* Vignette overlay */
+#photo-vignette {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center,
+    transparent 55%, rgba(0,0,0,0.45) 100%);
+  z-index: 2;
+}
+
+/* Filter controls panel */
+#photo-controls {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  z-index: 50;
+  pointer-events: auto;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 12px;
+  padding: 12px 20px;
+  white-space: nowrap;
+}
+
+.photo-filter-row {
+  display: flex;
+  gap: 8px;
+}
+
+.photo-filter-btn {
+  padding: 7px 16px;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 7px;
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.7);
+  font-family: var(--font-main);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+}
+.photo-filter-btn:hover  { background: rgba(255,255,255,0.16); color: #fff; }
+.photo-filter-btn.active { background: var(--accent); border-color: transparent; color: #fff; }
+
+.photo-tip {
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.45);
+  text-align: center;
+}
+
+/* Brief center label on enter */
+#photo-mode-label {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.9);
+  text-shadow: 0 2px 8px rgba(0,0,0,0.7);
+  background: rgba(0,0,0,0.55);
+  padding: 12px 28px;
+  border-radius: 10px;
+  pointer-events: none;
+  z-index: 100;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  letter-spacing: 0.05em;
+}
+#photo-mode-label.visible { opacity: 1; }

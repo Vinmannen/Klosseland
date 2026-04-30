@@ -470,6 +470,7 @@ async function runGame(worldConfig, netOpts = {}) {
   // ── 7b. Signs — text overlay meshes ─────────────────────
   const _signMeshes = new Map()  // "bx,by,bz" → THREE.Mesh
   const _fireworks  = []         // active Firework instances
+  let   _photoMode  = false
 
   // ── Phase 21 — Fireworks ─────────────────────────────────
 
@@ -681,6 +682,14 @@ async function runGame(worldConfig, netOpts = {}) {
     _fireworks.length = 0
     minimap.dispose()
     hud.dispose()
+    if (_photoMode) {
+      document.body.classList.remove('photo-mode')
+      canvas.style.filter = 'none'
+      _photoControls?.remove(); _photoControls = null
+      _photoVignette?.remove(); _photoVignette = null
+      _photoLabel?.remove();    _photoLabel    = null
+      _photoMode = false
+    }
     _clearHUD()
     pauseMenu.hide()
     paused = false
@@ -703,6 +712,94 @@ async function runGame(worldConfig, netOpts = {}) {
       getPlayers: network ? () => network.getPlayerList() : null,
       playerName,
     })
+  }
+
+  // ── Phase 23 — Photo Mode ────────────────────────────────
+
+  const _PHOTO_FILTERS = {
+    none:  'none',
+    warm:  'sepia(0.3) saturate(1.4) hue-rotate(-15deg)',
+    cool:  'saturate(0.9) hue-rotate(20deg) brightness(1.05)',
+    sepia: 'sepia(0.8) contrast(1.1)',
+    vivid: 'saturate(1.8) contrast(1.05)',
+  }
+  let _photoControls   = null
+  let _photoVignette   = null
+  let _photoLabel      = null
+  let _photoLabelTimer = null
+
+  function _applyPhotoFilter(key) {
+    localStorage.setItem('klosseland_photo_filter', key)
+    canvas.style.filter = _PHOTO_FILTERS[key] ?? 'none'
+    _photoControls?.querySelectorAll('.photo-filter-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.filter === key)
+    })
+  }
+
+  function _buildPhotoControls() {
+    const el    = document.createElement('div')
+    el.id       = 'photo-controls'
+    const saved = localStorage.getItem('klosseland_photo_filter') || 'none'
+    el.innerHTML = `
+      <div class="photo-filter-row">
+        ${Object.keys(_PHOTO_FILTERS).map(k => {
+          const label = k.charAt(0).toUpperCase() + k.slice(1)
+          return `<button class="photo-filter-btn${k === saved ? ' active' : ''}" data-filter="${k}">${label}</button>`
+        }).join('')}
+      </div>
+      <div class="photo-tip">PrtScn / Cmd+Shift+4 to capture</div>
+    `
+    el.querySelectorAll('.photo-filter-btn').forEach(btn => {
+      btn.addEventListener('click', ev => { ev.stopPropagation(); _applyPhotoFilter(btn.dataset.filter) })
+    })
+    document.body.appendChild(el)
+    return el
+  }
+
+  function _enablePhotoMode() {
+    _photoMode = true
+    document.body.classList.add('photo-mode')
+    controls.unlock()
+
+    const saved = localStorage.getItem('klosseland_photo_filter') || 'none'
+    canvas.style.filter = _PHOTO_FILTERS[saved] ?? 'none'
+
+    if (!_photoControls) {
+      _photoControls = _buildPhotoControls()
+    } else {
+      _photoControls.querySelectorAll('.photo-filter-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.filter === saved)
+      })
+    }
+
+    if (!_photoVignette) {
+      _photoVignette    = document.createElement('div')
+      _photoVignette.id = 'photo-vignette'
+      document.body.appendChild(_photoVignette)
+    }
+
+    if (_photoLabel) { clearTimeout(_photoLabelTimer); _photoLabel.remove(); _photoLabel = null }
+    const lbl    = document.createElement('div')
+    lbl.id       = 'photo-mode-label'
+    lbl.textContent = 'PHOTO MODE — P to exit'
+    document.body.appendChild(lbl)
+    _photoLabel = lbl
+    requestAnimationFrame(() => lbl.classList.add('visible'))
+    _photoLabelTimer = setTimeout(() => {
+      lbl.classList.remove('visible')
+      _photoLabelTimer = setTimeout(() => { lbl.remove(); if (_photoLabel === lbl) _photoLabel = null }, 450)
+    }, 2000)
+  }
+
+  function _disablePhotoMode() {
+    _photoMode = false
+    document.body.classList.remove('photo-mode')
+    canvas.style.filter = 'none'
+    controls.lock()
+    _photoControls?.remove(); _photoControls = null
+    _photoVignette?.remove(); _photoVignette = null
+    if (_photoLabelTimer) { clearTimeout(_photoLabelTimer); _photoLabelTimer = null }
+    _photoLabel?.remove(); _photoLabel = null
   }
 
   function onKeyDown(e) {
@@ -729,6 +826,11 @@ async function runGame(worldConfig, netOpts = {}) {
       hud.toggleCoords()
       return
     }
+    if (e.code === 'KeyP' || e.code === 'F12') {
+      e.preventDefault()
+      if (!paused) _photoMode ? _disablePhotoMode() : _enablePhotoMode()
+      return
+    }
     if (e.code === 'Tab') {
       e.preventDefault()
       if (paused) return
@@ -742,6 +844,10 @@ async function runGame(worldConfig, netOpts = {}) {
       return
     }
     if (e.code === 'Escape') {
+      if (_photoMode) {
+        _disablePhotoMode()
+        return
+      }
       if (inventoryScreen.visible) {
         inventoryScreen.hide()
         controls.lock()
