@@ -240,6 +240,7 @@ export default {
   ctrl_pause:        'Pause',
   ctrl_camera:       'Bytt kamera',
   ctrl_chat:         'Chat',
+  ctrl_stamp:        'Byggemaler',
 
   // ── Opplæringssteg ───────────────────────────────────────
   tut_1_title: 'Velkommen til Klosseland!',

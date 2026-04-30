@@ -46,6 +46,8 @@ import { WeatherSystem }    from './systems/WeatherSystem.js'
 import { openChoppingBoard, openMixingBowl, openStove, openRecipeBook } from './ui/CookingUI.js'
 import { FarmSystem }  from './systems/FarmSystem.js'
 import { DropSystem }  from './systems/DropSystem.js'
+import { StampPicker } from './ui/StampPicker.js'
+import { buildGhostMesh, updateGhostPosition, disposeGhostMesh } from './tools/ghostHelper.js'
 
 // ── Directional furniture placement ──────────────────────────
 // Maps camera yaw (radians) to furniture facing index 0-3.
@@ -472,6 +474,10 @@ async function runGame(worldConfig, netOpts = {}) {
   const _fireworks  = []         // active Firework instances
   let   _photoMode  = false
 
+  // ── Phase 24 — Stamp Tool ────────────────────────────────
+  let _activeTemplate = null   // currently selected TEMPLATES entry
+  let _stampGhost     = null   // THREE.LineSegments ghost mesh
+
   // ── Phase 21 — Fireworks ─────────────────────────────────
 
   const _SIGN_FACE_POS = [
@@ -682,6 +688,8 @@ async function runGame(worldConfig, netOpts = {}) {
     _fireworks.length = 0
     minimap.dispose()
     hud.dispose()
+    disposeGhostMesh(renderer.scene, _stampGhost)
+    _stampGhost = null; _activeTemplate = null
     if (_photoMode) {
       document.body.classList.remove('photo-mode')
       canvas.style.filter = 'none'
@@ -831,6 +839,26 @@ async function runGame(worldConfig, netOpts = {}) {
       if (!paused) _photoMode ? _disablePhotoMode() : _enablePhotoMode()
       return
     }
+    if (e.code === 'KeyG' && !paused && !chatUI?.isOpen) {
+      e.preventDefault()
+      if (_activeTemplate) {
+        disposeGhostMesh(renderer.scene, _stampGhost)
+        _stampGhost = null; _activeTemplate = null
+        return
+      }
+      controls.unlock();
+      (async () => {
+        const picker = new StampPicker()
+        const chosen = await picker.show()
+        if (chosen) {
+          _activeTemplate = chosen
+          _stampGhost     = buildGhostMesh(renderer.scene, chosen.blocks)
+          _stampGhost.visible = true
+        }
+        if (!paused) controls.lock()
+      })()
+      return
+    }
     if (e.code === 'Tab') {
       e.preventDefault()
       if (paused) return
@@ -851,6 +879,11 @@ async function runGame(worldConfig, netOpts = {}) {
       if (inventoryScreen.visible) {
         inventoryScreen.hide()
         controls.lock()
+        return
+      }
+      if (_activeTemplate) {
+        disposeGhostMesh(renderer.scene, _stampGhost)
+        _stampGhost = null; _activeTemplate = null
         return
       }
       if (copyPaste.pasteMode || copyPaste.hasSelection) {
@@ -1411,6 +1444,11 @@ async function runGame(worldConfig, netOpts = {}) {
         // Update paste-mode ghost position
         if (copyPaste.pasteMode) copyPaste.updatePastePreview(ray.bx, ray.by, ray.bz)
 
+        // Update stamp ghost position
+        if (_activeTemplate && _stampGhost) {
+          updateGhostPosition(_stampGhost, ray.bx, ray.by, ray.bz, _activeTemplate.origin)
+        }
+
         // Smart placement: if ray hits the upper portion of a vertical face,
         // redirect to place on top of the block instead of to the side.
         let pnx = ray.nx, pny = ray.ny, pnz = ray.nz
@@ -1422,7 +1460,7 @@ async function runGame(worldConfig, netOpts = {}) {
         const py = ray.by + pny
         const pz = ray.bz + pnz
         renderer.placementGhost.position.set(px + 0.5, py + 0.5, pz + 0.5)
-        renderer.placementGhost.visible = controls.pointerLocked && !!selectedId
+        renderer.placementGhost.visible = controls.pointerLocked && !!selectedId && !_activeTemplate
 
         if (!chatOpen) {
           // ── Eyedropper (MMB) ─────────────────────────────
@@ -1439,8 +1477,25 @@ async function runGame(worldConfig, netOpts = {}) {
           if (controls.consumeKey('BracketLeft'))  copyPaste.setCornerA(ray.bx, ray.by, ray.bz)
           if (controls.consumeKey('BracketRight')) copyPaste.setCornerB(ray.bx, ray.by, ray.bz)
 
+          // ── Stamp confirm (LMB while template active) ────
+          if (_activeTemplate && controls.consumeLMB()) {
+            const tpl    = _activeTemplate
+            const ox     = ray.bx - tpl.origin[0]
+            const oy     = ray.by - tpl.origin[1]
+            const oz     = ray.bz - tpl.origin[2]
+            const capped = tpl.blocks.slice(0, 300)
+            for (const [dx, dy, dz, id] of capped) {
+              const wx = ox + dx, wy = oy + dy, wz = oz + dz
+              world.setBlock(wx, wy, wz, id)
+              network?.sendBlockChange(wx, wy, wz, id)
+              lightingSystem.blockPlaced(wx, wy, wz, id)
+            }
+            soundSystem.onBlockPlace(capped[0]?.[3] ?? 12)
+            disposeGhostMesh(renderer.scene, _stampGhost)
+            _stampGhost = null; _activeTemplate = null
+
           // ── Paste confirm (LMB in paste mode) ────────────
-          if (copyPaste.pasteMode && controls.consumeLMB()) {
+          } else if (copyPaste.pasteMode && controls.consumeLMB()) {
             copyPaste.paste(world, ray.bx, ray.by, ray.bz)
 
           // ── Fill (F + LMB) ────────────────────────────────

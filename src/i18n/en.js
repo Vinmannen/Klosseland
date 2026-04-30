@@ -240,6 +240,7 @@ export default {
   ctrl_pause:        'Pause',
   ctrl_camera:       'Toggle camera',
   ctrl_chat:         'Chat',
+  ctrl_stamp:        'Building Templates',
 
   // ── Tutorial steps ───────────────────────────────────────
   tut_1_title: 'Welcome to Klosseland!',
